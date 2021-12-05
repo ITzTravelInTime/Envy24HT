@@ -1,10 +1,7 @@
 #include "AudioEngine.h"
 #include <IOKit/IOLib.h>
+#include "SampleConvert.h"
 
-#define INT_MIN 2147483648.0
-#define INT_MAX 2147483647.0
-#define INT_MINDIV (1.0 / INT_MIN)
-#define INT_MAXDIV (1.0 / INT_MAX)
 
 // The function clipOutputSamples() is called to clip and convert samples from the float mix buffer into the actual
 // hardware sample buffer.  The samples to be clipped, are guaranteed not to wrap from the end of the buffer to the
@@ -24,6 +21,8 @@
 //		audioStream - the audio stream this function is operating on
 IOReturn Envy24HTAudioEngine::clipOutputSamples(const void *mixBuf, void *sampleBuf, UInt32 firstSampleFrame, UInt32 numSampleFrames, const IOAudioStreamFormat *streamFormat, IOAudioStream *audioStream)
 {
+
+	/*
     UInt32 sampleIndex, maxSampleIndex, spdifIndex;
     float *floatMixBuf;
 	float inSample;
@@ -44,24 +43,24 @@ IOReturn Envy24HTAudioEngine::clipOutputSamples(const void *mixBuf, void *sample
         
         // Clip that sample to a range of -1.0 to 1.0
         // A softer clipping operation could be done here
-        if (inSample > 1.0)
+        if (inSample > clipMax)
 		{
-            inSample = 1.0;
+            inSample = clipMax;
         }
-		else if (inSample < -1.0)
+		else if (inSample < clipMin)
 		{
-            inSample = -1.0;
+            inSample = clipMin;
         }
         
         // Scale the -1.0 to 1.0 range to the appropriate scale for signed 32-bit samples and then
         // convert to SInt32 and store in the hardware sample buffer
 		if (inSample >= 0)
 		{
-			outputSInt32Buf[sampleIndex] = (SInt32) (inSample * INT_MAX);
+			outputSInt32Buf[sampleIndex] = (SInt32)correctEndian32((UInt32)  (inSample * INT_MAX) );
 		}
 		else
 		{
-			outputSInt32Buf[sampleIndex] = (SInt32) (inSample * INT_MIN);
+			outputSInt32Buf[sampleIndex] = (SInt32)correctEndian32((UInt32)  (inSample * INT_MIN) );
 		}
     }
 	
@@ -73,7 +72,14 @@ IOReturn Envy24HTAudioEngine::clipOutputSamples(const void *mixBuf, void *sample
         outputBufferSPDIF[spdifIndex++] = outputSInt32Buf[sampleIndex++];
 		outputBufferSPDIF[spdifIndex++] = outputSInt32Buf[sampleIndex];
     }
+	*/
 	
+	UInt32 startSampleIndex, maxSampleIndex;
+    
+    maxSampleIndex = (firstSampleFrame + numSampleFrames) * streamFormat->fNumChannels;
+    startSampleIndex = (firstSampleFrame * streamFormat->fNumChannels);
+    
+    Float32ToSInt32_optimized( (const float *)mixBuf, (SInt32 *)sampleBuf, maxSampleIndex, startSampleIndex);
     
     return kIOReturnSuccess;
 }
@@ -99,37 +105,32 @@ IOReturn Envy24HTAudioEngine::convertInputSamples(const void *sampleBuf, void *d
 {
     UInt32 numSamplesLeft;
     float *floatDestBuf;
-    SInt32 *inputBuf;
-	SInt32 inputSample;
-	UInt32 i;
-    
-    // Start by casting the destination buffer to a float *
-    floatDestBuf = (float *)destBuf;
-    // Determine the starting point for our input conversion 
-    inputBuf = &(((SInt32 *)sampleBuf)[firstSampleFrame * streamFormat->fNumChannels]);
     
     // Calculate the number of actual samples to convert
     numSamplesLeft = numSampleFrames * streamFormat->fNumChannels;
     
-	//IOLog("convert: %lu %lu %ld\n", numSampleFrames, numSamplesLeft, *inputBuf);
-	
-    // Loop through each sample and scale and convert them
-    for (i = 0; i < numSamplesLeft; i++) {
-        // Fetch the SInt32 input sample
-        inputSample = *inputBuf;
+    // Start by casting the destination buffer to a float *
+    floatDestBuf = (float *)destBuf;
     
-        // Scale that sample to a range of -1.0 to 1.0, convert to float and store in the destination buffer
-        // at the proper location
-        if (inputSample >= 0) {
-            *floatDestBuf = inputSample * INT_MAXDIV;
-        } else {
-            *floatDestBuf = inputSample * INT_MINDIV;
-        }
+        SInt32 *inputBuf;
+        SInt32 inputSample;
+    
+        // Determine the starting point for our input conversion
+        inputBuf = &(((SInt32 *)sampleBuf)[firstSampleFrame * streamFormat->fNumChannels]);
+    
+        // Loop through each sample and scale and convert them
+        for (UInt32 i = 0; i < numSamplesLeft; i++) {
+            // Fetch the SInt32 input sample
+            inputSample = *inputBuf;
         
-        // Move on to the next sample
-        ++inputBuf;
-        ++floatDestBuf;
-    }
+            // Scale that sample to a range of -1.0 to 1.0, convert to float and store in the destination buffer
+            // at the proper location
+            *floatDestBuf = (SInt32)correctEndianess32((UInt32)(inputSample * ( inputSample>=0 ? clipPosMulDiv24 : clipNegMulDiv24 )));
+			
+            // Move on to the next sample
+            ++inputBuf;
+            ++floatDestBuf;
+        }
 
     return kIOReturnSuccess;
 }

@@ -281,11 +281,21 @@ IOAudioStream *Envy24HTAudioEngine::createNewAudioStream(IOAudioStreamDirection 
 			// This device only allows a single format and a choice of 2 different sample rates
             rate.fraction = 0;
 
-			for (int i = 0; i < FREQUENCIES; i++)
-			{
-				rate.whole = Frequencies[i];
-				audioStream->addAvailableFormat(&format, &rate, &rate, NULL, 0);
-			}
+			//tested and doesn't work
+			//for (UInt8 f = 8; f <= 32; f += 8){
+			//	format.fBitDepth = f;
+				
+				for (int i = 0; i < FREQUENCIES; i++){
+					rate.whole = Frequencies[i];
+				
+					if ((rate.whole == 192000 && !card->Specific.supports192) || (rate.whole == 176400 && !card->Specific.supports176))
+						continue;
+					
+					DBGPRINT("	New samplig rate: Bits \"%u\" Sample Rate \"%u\"\n", (unsigned int)format.fBitDepth, (unsigned int)rate.whole);
+				
+					audioStream->addAvailableFormat(&format, &rate, &rate, NULL, 0);
+				}
+			//}
 
 						
 			// Finally, the IOAudioStream's current format needs to be indicated
@@ -428,6 +438,13 @@ IOReturn Envy24HTAudioEngine::performFormatChange(IOAudioStream *audioStream, co
     
 	if (newSampleRate)
 	{
+		//doesn't work because aparently this function needs to be performed multiple time to have the speed and pitch correcty setup
+		/*
+		if (newSampleRate->whole == currentSampleRate){
+			return kIOReturnSuccess;
+		}
+		*/
+		 
 		currentSampleRate = newSampleRate->whole;
 	}
 	else

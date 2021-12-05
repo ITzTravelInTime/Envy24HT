@@ -48,9 +48,9 @@
 			name = Envy24HTAudioDriver;
 			productInstallPath = "$(SYSTEM_LIBRARY_DIR)/Extensions";
 			productName = Envy24HTAudioDriver;
-			productReference = 0B81C263FFB7832611CA28AA /* Envy24HTPCIAudioDriver.kext */;
+			productReference = 0B81C263FFB7832611CA28AA /* SamplePCIAudioDriver.kext */;
 			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
 <plist version=\"1.0\">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
@@ -117,7 +117,7 @@
 		0117744E00710DAB7F000001 /* AudioEngine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioEngine.h; sourceTree = "<group>"; };
 		0117744F00710DAB7F000001 /* AudioEngine.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AudioEngine.cpp; sourceTree = "<group>"; };
 		089C167EFE841241C02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		0B81C263FFB7832611CA28AA /* Envy24HTPCIAudioDriver.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = Envy24HTPCIAudioDriver.kext; sourceTree = BUILT_PRODUCTS_DIR; };
+		0B81C263FFB7832611CA28AA /* SamplePCIAudioDriver.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = SamplePCIAudioDriver.kext; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A224C3EFF42367911CA2CB7 /* AudioDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioDevice.h; sourceTree = "<group>"; };
 		1A224C3FFF42367911CA2CB7 /* AudioDevice.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDevice.cpp; sourceTree = "<group>"; };
 		850BB10C0E92D04E00BD103D /* misc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = misc.cpp; sourceTree = "<group>"; };
@@ -177,7 +177,7 @@
 		19C28FB6FE9D52B211CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				0B81C263FFB7832611CA28AA /* Envy24HTPCIAudioDriver.kext */,
+				0B81C263FFB7832611CA28AA /* SamplePCIAudioDriver.kext */,
 				011774440071097E7F000001 /* libAudioFloatLib.a */,
 			);
 			name = Products;
@@ -597,28 +597,49 @@
 		FCC4E42A08B955B400AC9D19 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
 				BUILD_VARIANTS = normal;
 				GCC_MODEL_TUNING = "";
 				INFOPLIST_PREPROCESS = NO;
+				LINK_WITH_STANDARD_LIBRARIES = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				VERSIONING_SYSTEM = "";
 			};
 			name = Development;
 		};
 		FCC4E42B08B955B400AC9D19 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
 				GCC_MODEL_TUNING = "";
+				LINK_WITH_STANDARD_LIBRARIES = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				VERSIONING_SYSTEM = "";
 			};
 			name = Deployment;
 		};
 		FCC4E42C08B955B400AC9D19 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
 				GCC_MODEL_TUNING = "";
+				LINK_WITH_STANDARD_LIBRARIES = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				VERSIONING_SYSTEM = "";
 			};
 			name = Default;
 		};

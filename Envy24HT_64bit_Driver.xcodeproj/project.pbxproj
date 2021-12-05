@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 42;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -47,6 +47,8 @@
 		85B86BF40E92C6C600B18780 /* regs.h in Headers */ = {isa = PBXBuildFile; fileRef = 85B86BF30E92C6C600B18780 /* regs.h */; };
 		85CD524D0EE49B66005C51C3 /* prodigy_hifi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 85CD524B0EE49B66005C51C3 /* prodigy_hifi.cpp */; };
 		85CD524E0EE49B66005C51C3 /* prodigy_hifi.h in Headers */ = {isa = PBXBuildFile; fileRef = 85CD524C0EE49B66005C51C3 /* prodigy_hifi.h */; };
+		DDC3B7F8275967230088AD28 /* SampleConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = DDC3B7F7275967230088AD28 /* SampleConvert.h */; };
+		DDC3B7F9275967230088AD28 /* SampleConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = DDC3B7F7275967230088AD28 /* SampleConvert.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBundleTarget section */
@@ -70,7 +72,7 @@
 			productName = Envy24HTAudioDriver;
 			productReference = 0B81C263FFB7832611CA28AA /* Envy24HTPCIAudioDriver.kext */;
 			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
 <plist version=\"1.0\">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
@@ -143,11 +145,11 @@
 		0B81C263FFB7832611CA28AA /* Envy24HTPCIAudioDriver.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = Envy24HTPCIAudioDriver.kext; sourceTree = BUILT_PRODUCTS_DIR; };
 		1A224C3EFF42367911CA2CB7 /* AudioDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioDevice.h; sourceTree = "<group>"; };
 		1A224C3FFF42367911CA2CB7 /* AudioDevice.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDevice.cpp; sourceTree = "<group>"; };
-		844C5EE91072B3C60064BE19 /* Info-Envy24HTAudioDriver__Upgraded__2-1.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Envy24HTAudioDriver__Upgraded__2-1.plist"; sourceTree = "<group>"; };
+		844C5EE91072B3C60064BE19 /* Info-Envy24HTAudioDriver__Upgraded__2-1.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Info-Envy24HTAudioDriver__Upgraded__2-1.plist"; sourceTree = "<group>"; };
 		844C5EEA1072B3C60064BE19 /* Envy24HTPCIAudioDriver.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Envy24HTPCIAudioDriver.kext; sourceTree = BUILT_PRODUCTS_DIR; };
 		844C5EF51072B3C60064BE19 /* libAudioFloatLib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libAudioFloatLib.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		847F3C3A107155BF00F6BFF6 /* Info-Envy24HTAudioDriver__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Envy24HTAudioDriver__Upgraded_.plist"; sourceTree = "<group>"; };
-		847F3CC7107156D200F6BFF6 /* Info-Envy24HTAudioDriver__Upgraded__2.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Envy24HTAudioDriver__Upgraded__2.plist"; sourceTree = "<group>"; };
+		847F3C3A107155BF00F6BFF6 /* Info-Envy24HTAudioDriver__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Info-Envy24HTAudioDriver__Upgraded_.plist"; sourceTree = "<group>"; };
+		847F3CC7107156D200F6BFF6 /* Info-Envy24HTAudioDriver__Upgraded__2.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "Info-Envy24HTAudioDriver__Upgraded__2.plist"; sourceTree = "<group>"; };
 		850BB10C0E92D04E00BD103D /* misc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = misc.cpp; sourceTree = "<group>"; };
 		8583CDA50EA7C8A500723E83 /* Revo51.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Revo51.cpp; sourceTree = "<group>"; };
 		8583CDA60EA7C8A500723E83 /* Revo51.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Revo51.h; sourceTree = "<group>"; };
@@ -161,7 +163,8 @@
 		85B86BF30E92C6C600B18780 /* regs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = regs.h; sourceTree = "<group>"; };
 		85CD524B0EE49B66005C51C3 /* prodigy_hifi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = prodigy_hifi.cpp; sourceTree = "<group>"; };
 		85CD524C0EE49B66005C51C3 /* prodigy_hifi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prodigy_hifi.h; sourceTree = "<group>"; };
-		FCE7239808C89FB200026E23 /* install.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = install.sh; sourceTree = "<group>"; };
+		DDC3B7F7275967230088AD28 /* SampleConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampleConvert.h; sourceTree = "<group>"; };
+		FCE7239808C89FB200026E23 /* install.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = install.command; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -247,12 +250,13 @@
 				85B86BEA0E92C6B000B18780 /* ak_codec.cpp */,
 				85B86BEB0E92C6B000B18780 /* ak_codec.h */,
 				85B86BE70E92C65600B18780 /* DriverData.h */,
-				FCE7239808C89FB200026E23 /* install.sh */,
+				FCE7239808C89FB200026E23 /* install.command */,
 				1A224C3EFF42367911CA2CB7 /* AudioDevice.h */,
 				1A224C3FFF42367911CA2CB7 /* AudioDevice.cpp */,
 				0117744E00710DAB7F000001 /* AudioEngine.h */,
 				0117744F00710DAB7F000001 /* AudioEngine.cpp */,
 				0117744B00710CA77F000001 /* SampleAudioClip.cpp */,
+				DDC3B7F7275967230088AD28 /* SampleConvert.h */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -264,6 +268,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DDC3B7F9275967230088AD28 /* SampleConvert.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -303,6 +308,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DDC3B7F8275967230088AD28 /* SampleConvert.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -379,11 +385,12 @@
 				LastUpgradeCheck = 0410;
 			};
 			buildConfigurationList = FCC4E42908B955B400AC9D19 /* Build configuration list for PBXProject "Envy24HT_64bit_Driver" */;
-			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				English,
 			);
 			mainGroup = 089C166AFE841209C02AAC07 /* Envy24HTAudioDriver */;
 			projectDirPath = "";
@@ -455,7 +462,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "script=\"${SYSTEM_DEVELOPER_DIR}/ProjectBuilder Extras/Kernel Extension Support/KEXTPostprocess\";\nif [ -x \"$script\" ]; then\n    . \"$script\"\nfi\nfind \"${BUILT_PRODUCTS_DIR}/Envy24HTPCIAudioDriver.kext\" -type d -exec /bin/chmod 0755 {} \\;\nfind \"${BUILT_PRODUCTS_DIR}/Envy24HTPCIAudioDriver.kext\" -type f -exec /bin/chmod 0644 {} \\;\ncp ${SRCROOT}/install.sh ${BUILT_PRODUCTS_DIR}";
+			shellScript = "script=\"${SYSTEM_DEVELOPER_DIR}/ProjectBuilder Extras/Kernel Extension Support/KEXTPostprocess\";\nif [ -x \"$script\" ]; then\n    . \"$script\"\nfi\nfind \"${BUILT_PRODUCTS_DIR}/Envy24HTPCIAudioDriver.kext\" -type d -exec /bin/chmod 0755 {} \\;\nfind \"${BUILT_PRODUCTS_DIR}/Envy24HTPCIAudioDriver.kext\" -type f -exec /bin/chmod 0644 {} \\;\ncp ${SRCROOT}/install.command ${BUILT_PRODUCTS_DIR}";
 		};
 		06AA1267FFB2110C11CA28AA /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -482,7 +489,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "script=\"${SYSTEM_DEVELOPER_DIR}/ProjectBuilder Extras/Kernel Extension Support/KEXTPostprocess\";\nif [ -x \"$script\" ]; then\n    . \"$script\"\nfi\nfind \"${BUILT_PRODUCTS_DIR}/Envy24HTPCIAudioDriver.kext\" -type d -exec /bin/chmod 0755 {} \\;\nfind \"${BUILT_PRODUCTS_DIR}/Envy24HTPCIAudioDriver.kext\" -type f -exec /bin/chmod 0644 {} \\;\ncp ${SRCROOT}/install.sh ${BUILT_PRODUCTS_DIR}";
+			shellScript = "script=\"${SYSTEM_DEVELOPER_DIR}/ProjectBuilder Extras/Kernel Extension Support/KEXTPostprocess\";\nif [ -x \"$script\" ]; then\n    . \"$script\"\nfi\nfind \"${BUILT_PRODUCTS_DIR}/Envy24HTPCIAudioDriver.kext\" -type d -exec /bin/chmod 0755 {} \\;\nfind \"${BUILT_PRODUCTS_DIR}/Envy24HTPCIAudioDriver.kext\" -type f -exec /bin/chmod 0644 {} \\;\ncp ${SRCROOT}/install.command ${BUILT_PRODUCTS_DIR}";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -563,26 +570,37 @@
 		844C5EE61072B3C60064BE19 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				COPY_PHASE_STRIP = NO;
+				ARCHS = (
+					ppc,
+					i386,
+				);
+				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 2;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = 4.0;
 				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = "Info-Envy24HTAudioDriver__Upgraded__2-1.plist";
 				INSTALL_PATH = "$(SYSTEM_LIBRARY_DIR)/Extensions";
 				KERNEL_MODULE = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/build/Deployment\"",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\\\"$(SRCROOT)/build/Deployment\\\"";
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				MODULE_IOKIT = YES;
 				MODULE_NAME = "com.audio-evolution.driver.Envy24HT";
 				MODULE_VERSION = 0.6.4;
-				OTHER_CFLAGS = -DDEBUG;
+				OTHER_CFLAGS = "-DDEBUG";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
+				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = YES;
 				PRODUCT_NAME = Envy24HTPCIAudioDriver;
+				PUBLIC_HEADERS_FOLDER_PATH = "$(KEXT_FRAMEWORK)/Contents/Headers/$(KEXT_FAMILY_NAME)";
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = (
 					"-Wmost",
@@ -590,31 +608,42 @@
 					"-Wno-unknown-pragmas",
 				);
 				WRAPPER_EXTENSION = kext;
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			name = Development;
 		};
 		844C5EE71072B3C60064BE19 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = 4.0;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "Info-Envy24HTAudioDriver__Upgraded__2-1.plist";
 				INSTALL_PATH = "$(SYSTEM_LIBRARY_DIR)/Extensions";
 				KERNEL_MODULE = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/build/Deployment\"",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\\\"$(SRCROOT)/build/Deployment\\\"";
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				MODULE_IOKIT = YES;
 				MODULE_NAME = "com.audio-evolution.Envy24HTAudio";
 				MODULE_VERSION = 0.6.4;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
+				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = YES;
 				PRODUCT_NAME = Envy24HTPCIAudioDriver;
+				PUBLIC_HEADERS_FOLDER_PATH = "$(KEXT_FRAMEWORK)/Contents/Headers/$(KEXT_FAMILY_NAME)";
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = (
 					"-Wmost",
@@ -629,23 +658,35 @@
 		844C5EE81072B3C60064BE19 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
+				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = 4.0;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "Info-Envy24HTAudioDriver__Upgraded__2-1.plist";
 				INSTALL_PATH = "$(SYSTEM_LIBRARY_DIR)/Extensions";
 				KERNEL_MODULE = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/build/Deployment\"",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
+				LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\\\"$(SRCROOT)/build/Deployment\\\"";
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				MODULE_IOKIT = YES;
 				MODULE_NAME = com.MyCompany.driver.SamplePCIAudioDriver;
 				MODULE_VERSION = 1.0.0d1;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
+				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = YES;
 				PRODUCT_NAME = SamplePCIAudioDriver;
+				PUBLIC_HEADERS_FOLDER_PATH = "$(KEXT_FRAMEWORK)/Contents/Headers/$(KEXT_FAMILY_NAME)";
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = (
 					"-Wmost",
@@ -653,12 +694,17 @@
 					"-Wno-unknown-pragmas",
 				);
 				WRAPPER_EXTENSION = kext;
+				ZERO_LINK = NO;
 			};
 			name = Default;
 		};
 		844C5EF21072B3C60064BE19 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
 				COPY_PHASE_STRIP = NO;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -675,11 +721,14 @@
 					APPLE,
 					NeXT,
 				);
+				GCC_VERSION = 4.0;
 				HEADER_SEARCH_PATHS = (
 					"$(SYSTEM_LIBRARY_DIR)/Frameworks/Kernel.framework/Headers",
 					"$(SYSTEM_LIBRARY_DIR)/Frameworks/Kernel.framework/Headers/bsd",
 				);
+				INFOPLIST_FILE = "/Users/pietrocaruso/Desktop/Envy24HT-master/Info-Envy24HTAudioDriver__Upgraded__2-1.plist";
 				LIBRARY_STYLE = STATIC;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OTHER_CFLAGS = (
 					"-nostdinc",
 					"-finline",
@@ -695,6 +744,7 @@
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = AudioFloatLib;
 				REZ_EXECUTABLE = YES;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = (
 					"-Wmost",
@@ -708,13 +758,17 @@
 		844C5EF31072B3C60064BE19 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
 				COPY_PHASE_STRIP = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_INPUT_FILETYPE = sourcecode.cpp.cpp;
-				GCC_OPTIMIZATION_LEVEL = 2;
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					KERNEL,
 					KERNEL_PRIVATE,
@@ -722,11 +776,15 @@
 					APPLE,
 					NeXT,
 				);
+				GCC_VERSION = 4.0;
 				HEADER_SEARCH_PATHS = (
 					"$(SYSTEM_LIBRARY_DIR)/Frameworks/Kernel.framework/Headers",
 					"$(SYSTEM_LIBRARY_DIR)/Frameworks/Kernel.framework/Headers/bsd",
 				);
+				INFOPLIST_FILE = "/Users/pietrocaruso/Desktop/Envy24HT-master/Info-Envy24HTAudioDriver__Upgraded__2-1.plist";
+				LD_GENERATE_MAP_FILE = YES;
 				LIBRARY_STYLE = STATIC;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OTHER_CFLAGS = (
 					"-nostdinc",
 					"-finline",
@@ -742,6 +800,7 @@
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = AudioFloatLib;
 				REZ_EXECUTABLE = YES;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = (
 					"-Wmost",
@@ -755,6 +814,10 @@
 		844C5EF41072B3C60064BE19 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
@@ -768,11 +831,14 @@
 					APPLE,
 					NeXT,
 				);
+				GCC_VERSION = 4.0;
 				HEADER_SEARCH_PATHS = (
 					"$(SYSTEM_LIBRARY_DIR)/Frameworks/Kernel.framework/Headers",
 					"$(SYSTEM_LIBRARY_DIR)/Frameworks/Kernel.framework/Headers/bsd",
 				);
+				INFOPLIST_FILE = "/Users/pietrocaruso/Desktop/Envy24HT-master/Info-Envy24HTAudioDriver__Upgraded__2-1.plist";
 				LIBRARY_STYLE = STATIC;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OTHER_CFLAGS = (
 					"-nostdinc",
 					"-finline",
@@ -788,6 +854,7 @@
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = AudioFloatLib;
 				REZ_EXECUTABLE = YES;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = (
 					"-Wmost",
@@ -950,9 +1017,7 @@
 				MODULE_IOKIT = YES;
 				MODULE_NAME = "com.audio-evolution.driver.Envy24HT";
 				MODULE_VERSION = 0.6.4;
-				OTHER_CFLAGS = (
-					"-DDEBUG",
-				);
+				OTHER_CFLAGS = "-DDEBUG";
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
 				PRODUCT_NAME = Envy24HTPCIAudioDriver;
@@ -1022,41 +1087,55 @@
 		FCC4E42A08B955B400AC9D19 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					x86_64,
-					i386,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				BUILD_VARIANTS = normal;
+				GCC_DEBUGGING_SYMBOLS = default;
 				GCC_MODEL_TUNING = "";
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
 				GCC_VERSION = "";
-				INFOPLIST_PREPROCESS = NO;
+				INFOPLIST_FILE = "/Users/pietrocaruso/Desktop/Envy24HT-master/Info-Envy24HTAudioDriver__Upgraded_.plist";
+				INFOPLIST_PREPROCESS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
-				SDKROOT = macosx;
+				SDKROOT = macosx10.4;
+				VALID_ARCHS = "ppc i386 x86_64";
 			};
 			name = Development;
 		};
 		FCC4E42B08B955B400AC9D19 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					x86_64,
-					i386,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_DEBUGGING_SYMBOLS = default;
 				GCC_MODEL_TUNING = "";
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
+				INFOPLIST_FILE = "/Users/pietrocaruso/Desktop/Envy24HT-master/Info-Envy24HTAudioDriver__Upgraded_.plist";
+				INFOPLIST_PREPROCESS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
-				SDKROOT = macosx;
-				VALID_ARCHS = "i386 x86_64";
+				SDKROOT = macosx10.4;
+				VALID_ARCHS = "ppc i386 x86_64";
 			};
 			name = Deployment;
 		};
 		FCC4E42C08B955B400AC9D19 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_DEBUGGING_SYMBOLS = default;
 				GCC_MODEL_TUNING = "";
-				SDKROOT = macosx;
+				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
+				INFOPLIST_FILE = "/Users/pietrocaruso/Desktop/Envy24HT-master/Info-Envy24HTAudioDriver__Upgraded_.plist";
+				INFOPLIST_PREPROCESS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				SDKROOT = macosx10.4;
+				VALID_ARCHS = "ppc i386 x86_64";
 			};
 			name = Default;
 		};

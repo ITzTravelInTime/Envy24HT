@@ -70,6 +70,12 @@ struct CardSpecific
 	bool HasSPDIF;
 	UInt32 BufferSize;
 	UInt32 BufferSizeRec;
+	
+	char* name;
+	char* producer;
+	
+	bool supports192;
+	bool supports176;
 };
 
 struct CardData

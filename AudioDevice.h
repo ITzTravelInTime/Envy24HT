@@ -5,6 +5,8 @@
 
 #include <IOKit/audio/IOAudioDevice.h>
 
+//#define DEBUG
+
 #ifdef DEBUG
 	#define DBGPRINT(msg,...)    IOLog(msg, ##__VA_ARGS__)
 #else

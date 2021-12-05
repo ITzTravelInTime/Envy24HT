@@ -47,9 +47,11 @@ bool Envy24HTAudioDevice::initHardware(IOService *provider)
     card->pci_dev->setBusMasterEnable(true);
     
 	// NAMES CHANGED
-    setDeviceName("Envy24HT");
+    //setDeviceName("Envy24HT");
     setDeviceShortName("Envy24HT");
-    setManufacturerName("VIA/ICE");
+    //setManufacturerName("VIA/ICE");
+	
+	setDeviceTransportType(kIOAudioDeviceTransportTypePCI);
 
     // Config a map for the PCI config base registers
     // We need to keep this map around until we're done accessing the registers
@@ -67,6 +69,10 @@ bool Envy24HTAudioDevice::initHardware(IOService *provider)
 	{
 		goto Done;
 	}
+	
+	setDeviceName(card->Specific.name);
+	
+	setManufacturerName(card->Specific.producer);
 
     if (!createAudioEngine()) {
         goto Done;
@@ -385,10 +391,10 @@ IOReturn Envy24HTAudioDevice::gainChangeHandler(IOService *target, IOAudioContro
 
 IOReturn Envy24HTAudioDevice::gainChanged(IOAudioControl *gainControl, SInt32 oldValue, SInt32 newValue)
 {
-    DBGPRINT("Envy24HTAudioDevice[%p]::gainChanged(%p, %ld, %ld)\n", this, gainControl, oldValue, newValue);
+    DBGPRINT("Envy24HTAudioDevice[%p]::gainChanged(%p, %ld, %ld)\n", this, gainControl, (long int)oldValue, (long int)newValue);
     
     if (gainControl) {
-        DBGPRINT("\t-> Channel %ld\n", gainControl->getChannelID());
+        DBGPRINT("\t-> Channel %ld\n", (long int)gainControl->getChannelID());
     }
     
     // Add hardware gain change code here 
@@ -411,7 +417,7 @@ IOReturn Envy24HTAudioDevice::inputMuteChangeHandler(IOService *target, IOAudioC
 
 IOReturn Envy24HTAudioDevice::inputMuteChanged(IOAudioControl *muteControl, SInt32 oldValue, SInt32 newValue)
 {
-    DBGPRINT("Envy24HTAudioDevice[%p]::inputMuteChanged(%p, %ld, %ld)\n", this, muteControl, oldValue, newValue);
+    DBGPRINT("Envy24HTAudioDevice[%p]::inputMuteChanged(%p, %ld, %ld)\n", this, muteControl, (long int)oldValue, (long int)newValue);
     
     // Add input mute change code here
 //#warning TODO inputMuteChanged()    
