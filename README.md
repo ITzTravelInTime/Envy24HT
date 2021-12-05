@@ -28,7 +28,7 @@ Currently supported cards are:
 Other cards featuring the same Envy24HT (or the via VT1724) should work with this driver but could have issues or missing features or even not working at all, the driver has been tested only with the cards listed above.
 
 Cards that might work (but are currently untested):
-- Onkyo SE90
+- Onkyo SE 90
 - Onkyo SE 150
 - Onkyo SE 200
 
