@@ -1,8 +1,9 @@
 #ifndef AHI_Drivers_Card_DriverData_h
 #define AHI_Drivers_Card_DriverData_h
 
-#include <IOKit/PCI/IOPCIDevice.h>
+#include <IOKit/pci/IOPCIDevice.h>
 #include <IOKit/audio/IOAudioDevice.h>
+#include <IOKit/IOLib.h>
 
 #define UWORD unsigned short
 #define ULONG UInt32
@@ -32,8 +33,8 @@
 #define MPU401_READ()         dev->InByte(card->iobase + DATA_PORT )
 #define MPU401_WRITE(v)       dev->OutByte(card->iobase + DATA_PORT,v )
 
-enum Model {AUREON_SKY, AUREON_SPACE, PHASE28, REVO51, REVO71, JULIA, PHASE22, AP192, PRODIGY_HD2, CANTATIS};
-extern unsigned long Dirs[];
+enum Model {AUREON_SKY, AUREON_SPACE, PHASE28, REVO51, REVO71, JULIA, MAYA44, PHASE22, AP192, PRODIGY_HD2, CANTATIS};
+extern UInt32 Dirs[];
 
 
 struct CardData;
@@ -67,12 +68,12 @@ struct Parm
 struct CardSpecific
 {
 	UInt32 NumChannels;
-	bool HasSPDIF;
+	bool   HasSPDIF;
 	UInt32 BufferSize;
 	UInt32 BufferSizeRec;
 	
-	char* name;
-	char* producer;
+	const char* name;
+	const char* producer;
 	
 	bool supports192;
 	bool supports176;
@@ -88,7 +89,7 @@ struct CardData
    unsigned short		model;
    unsigned char     chiprev;
    unsigned int      irq;
-   unsigned long    SavedDir;
+   UInt32    SavedDir;
    unsigned short   SavedMask;
    
    struct CardSpecific Specific;

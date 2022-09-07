@@ -22,10 +22,11 @@ Currently supported cards are:
 - M-Audio Audiophile 192
 - ESI Juli@
 - ESI Prodigy Hi-Fi
+- ESI MAYA44
 - Audiotrack Prodigy 7.1    (best support)
 - Audiotrack Prodigy HD2
 
-Other cards featuring the same Envy24HT (or the via VT1724) should work with this driver but could have issues or missing features or even not working at all, the driver has been tested only with the cards listed above.
+Other cards featuring the same Envy24HT (or the via VT1724) could work with this driver but it's very likely that those could have issues, missing features or even not working at all, the driver has been tested only with the cards listed above.
 
 Cards that might work (but are currently untested):
 - Onkyo SE 90

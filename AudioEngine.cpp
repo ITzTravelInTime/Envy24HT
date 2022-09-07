@@ -97,6 +97,18 @@ bool Envy24HTAudioEngine::init(struct CardData* i_card)
 	}
 	card = i_card;
 	
+    inBuffer.addr = NULL;
+    inBuffer.dma_handle = 0;
+    inBuffer.size = card->Specific.BufferSizeRec;
+    
+    outBuffer.addr = NULL;
+    outBuffer.dma_handle = 0;
+    outBuffer.size = card->Specific.BufferSize;
+    
+    outSPDFBuffer.addr = NULL;
+    outSPDFBuffer.dma_handle = 0;
+    outSPDFBuffer.size = card->Specific.BufferSizeRec;
+    
     result = true;
     
 Done:
@@ -142,10 +154,10 @@ bool Envy24HTAudioEngine::initHardware(IOService *provider)
     // our secondary interrupt handler is to be called.  In our case, we
     // can do the work in the filter routine and then return false to
     // indicate that we do not want our secondary handler called
-	
-	    
+    
     // Allocate our input and output buffers
-	outputBuffer = (SInt32 *)IOMallocContiguous(card->Specific.BufferSize, 512, &physicalAddressOutput);
+	/*
+    outputBuffer = (SInt32 *)IOMallocContiguous(card->Specific.BufferSize, 512, &physicalAddressOutput);
 	if (!outputBuffer) {
         goto Done;
     }
@@ -164,11 +176,32 @@ bool Envy24HTAudioEngine::initHardware(IOService *provider)
 	card->pci_dev->ioWrite32(MT_DMAI_PB_ADDRESS, physicalAddressOutput, card->mtbase);
 	card->pci_dev->ioWrite32(MT_RDMA0_ADDRESS, physicalAddressInput, card->mtbase);
 	card->pci_dev->ioWrite32(MT_PDMA4_ADDRESS, physicalAddressOutputSPDIF, card->mtbase); // SPDIF
+    */
+    
+    if (pci_alloc(&outBuffer)){
+        goto Done;
+    }
+    
+    if (pci_alloc(&inBuffer)){
+        goto Done;
+    }
+    
+    if (pci_alloc(&outSPDFBuffer)){
+        goto Done;
+    }
+    
+    card->pci_dev->ioWrite32(MT_DMAI_PB_ADDRESS, outBuffer.dma_handle, card->mtbase);
+    card->pci_dev->ioWrite32(MT_RDMA0_ADDRESS, inBuffer.dma_handle, card->mtbase);
+    card->pci_dev->ioWrite32(MT_PDMA4_ADDRESS, outSPDFBuffer.dma_handle, card->mtbase); // SPDIF
+    
 	card->pci_dev->ioWrite8(MT_SAMPLERATE, 8, card->mtbase); // initialize to 44100 Hz
 	card->pci_dev->ioWrite8(MT_DMAI_BURSTSIZE, (8 - card->Specific.NumChannels) / 2, card->mtbase);
 	
     // Create an IOAudioStream for each buffer and add it to this audio engine
-    audioStream = createNewAudioStream(kIOAudioStreamDirectionOutput, outputBuffer, card->Specific.BufferSize, 0, card->Specific.NumChannels);
+    //audioStream = createNewAudioStream(kIOAudioStreamDirectionOutput, outputBuffer, card->Specific.BufferSize, 0, card->Specific.NumChannels);
+    
+    audioStream = createNewAudioStream(kIOAudioStreamDirectionOutput, outBuffer.addr, card->Specific.BufferSize, 0, card->Specific.NumChannels);
+    
     if (!audioStream) {
         goto Done;
     }
@@ -177,7 +210,9 @@ bool Envy24HTAudioEngine::initHardware(IOService *provider)
     audioStream->release();
 
 	
-    audioStream = createNewAudioStream(kIOAudioStreamDirectionInput, inputBuffer, card->Specific.BufferSizeRec, 1, 2);
+    //audioStream = createNewAudioStream(kIOAudioStreamDirectionInput, inputBuffer, card->Specific.BufferSizeRec, 1, 2);
+    
+    audioStream = createNewAudioStream(kIOAudioStreamDirectionInput, inBuffer.addr, card->Specific.BufferSizeRec, 1, 2);
     if (!audioStream) {
         goto Done;
     }
@@ -226,6 +261,7 @@ void Envy24HTAudioEngine::free()
         interruptEventSource = NULL;
     }
     
+    /*
     if (outputBuffer) {
         IOFreeContiguous(outputBuffer, card->Specific.BufferSize);
         outputBuffer = NULL;
@@ -239,7 +275,11 @@ void Envy24HTAudioEngine::free()
     if (inputBuffer) {
 		IOFreeContiguous(inputBuffer, card->Specific.BufferSizeRec);
         inputBuffer = NULL;
-    }
+    }*/
+    
+    pci_free(&outBuffer);
+    pci_free(&outSPDFBuffer);
+    pci_free(&inBuffer);
     
     super::free();
 }
@@ -304,7 +344,7 @@ IOAudioStream *Envy24HTAudioEngine::createNewAudioStream(IOAudioStreamDirection 
     }
 	else
 	{
-		IOLog("Couldn't allocate IOAudioStream\n");
+		IOLog("Couldn't allocate IOAudioStream!!!\n");
 		IOSleep(3000);
     }
 
@@ -349,8 +389,12 @@ IOReturn Envy24HTAudioEngine::performAudioEngineStart()
 
 
 	// Play
-	memset(outputBufferSPDIF, 0, card->Specific.BufferSizeRec);
+	//memset(outputBufferSPDIF, 0, card->Specific.BufferSizeRec);
+    
+    memset(outSPDFBuffer.addr, 0, card->Specific.BufferSizeRec);
+    
 	clearAllSampleBuffers();
+    
     UInt32 BufferSize32 = (card->Specific.BufferSize / 4) - 1;
 	UInt16 BufferSize16 = BufferSize32 & 0xFFFF;
 	UInt8 BufferSize8 = BufferSize32 >> 16;
@@ -427,8 +471,10 @@ UInt32 Envy24HTAudioEngine::getCurrentSampleFrame()
     // Change to return the real value
 	const UInt32 div = card->Specific.NumChannels * (32 / 8);
 	UInt32 current_address = card->pci_dev->ioRead32(MT_DMAI_PB_ADDRESS, card->mtbase);
-	UInt32 diff = (current_address - ((UInt32) physicalAddressOutput)) / div;
+	//UInt32 diff = (current_address - ((UInt32) physicalAddressOutput)) / div;
 
+    UInt32 diff = (current_address - outBuffer.dma_handle) / div;
+    
 	return diff;
 }
     
@@ -458,12 +504,14 @@ IOReturn Envy24HTAudioEngine::performFormatChange(IOAudioStream *audioStream, co
 
 	UInt32 SPDIFBits = lookUpFrequencyBits(currentSampleRate, SPDIF_Frequencies, SPDIF_FrequencyBits, SPDIF_FREQUENCIES, 1000);
 	ClearMask8(card->pci_dev, card->iobase, CCS_SPDIF_CONFIG, CCS_SPDIF_INTEGRATED);
+    
 	if (SPDIFBits != 1000)
 	{
 		card->pci_dev->ioWrite16(MT_SPDIF_TRANSMIT, 0x04 | 1 << 5 | (SPDIFBits << 12), card->mtbase);
 		WriteMask8(card->pci_dev, card->iobase, CCS_SPDIF_CONFIG, CCS_SPDIF_INTEGRATED);
 		//IOLog("Enabled SPDIF %u\n", (unsigned int) SPDIFBits);
 	}
+    
 	card->SPDIF_RateSupported = (SPDIFBits != 1000);
 	
 	//IOLog("Rate sup = %d\n", card->SPDIF_RateSupported);
@@ -576,8 +624,11 @@ IOReturn Envy24HTAudioEngine::eraseOutputSamples(
     
 	for (UInt32 sampleIndex = (firstSampleFrame * streamFormat->fNumChannels); sampleIndex < maxSampleIndex; sampleIndex+=skip)
 	{
-        outputBufferSPDIF[spdifIndex++] = 0; sampleIndex++;
-		outputBufferSPDIF[spdifIndex++] = 0;
+        //outputBufferSPDIF[spdifIndex++] = 0; sampleIndex++;
+		//outputBufferSPDIF[spdifIndex++] = 0;
+        
+        ((SInt32*)outSPDFBuffer.addr)[spdifIndex++] = 0; sampleIndex++;
+        ((SInt32*)outSPDFBuffer.addr)[spdifIndex++] = 0;
     }
     
 	return kIOReturnSuccess;
@@ -589,13 +640,13 @@ void Envy24HTAudioEngine::dumpRegisters()
     DBGPRINT("Envy24HTAudioEngine[%p]::dumpRegisters()\n", this);
 	int i;
 	
-	DBGPRINT("iobase = %lx, mtbase = %lx\n", card->iobase->getPhysicalAddress(), card->mtbase->getPhysicalAddress());
+	DBGPRINT("iobase = %llx, mtbase = %llx\n", card->iobase->getPhysicalAddress(), card->mtbase->getPhysicalAddress());
 	// config
 	DBGPRINT("Vendor id = %x\n", card->pci_dev->configRead16(0));
 	DBGPRINT("Device id = %x\n", card->pci_dev->configRead16(2));
 	DBGPRINT("PCI command id = %x\n", card->pci_dev->configRead16(4));
-	DBGPRINT("iobase = %lx\n", card->pci_dev->configRead32(0x10));
-	DBGPRINT("mtbase = %lx\n", card->pci_dev->configRead32(0x14));
+	DBGPRINT("iobase = %x\n", card->pci_dev->configRead32(0x10));
+	DBGPRINT("mtbase = %x\n", card->pci_dev->configRead32(0x14));
 	
 	DBGPRINT("---\n");
 	for (i = 0; i <= 0x1F; i++)
@@ -606,7 +657,7 @@ void Envy24HTAudioEngine::dumpRegisters()
 	DBGPRINT("---\n");
 	for (i = 0; i <= 0x74; i+=4)
 	{
-	  DBGPRINT("MT %02d (%02x): %lx\n", i, i, card->pci_dev->ioRead32(i, card->mtbase));
+	  DBGPRINT("MT %02d (%02x): %x\n", i, i, card->pci_dev->ioRead32(i, card->mtbase));
   	}
     DBGPRINT("---\n");
 	for (i = 0; i <= 0x77; i++)

@@ -4,6 +4,7 @@
 #include <IOKit/audio/IOAudioEngine.h>
 
 #include "AudioDevice.h"
+#include "misc.h"
 
 #define Envy24HTAudioEngine com_Envy24HTAudioEngine
 
@@ -52,15 +53,19 @@ private:
 	struct CardData				   *card;
 	UInt32							currentSampleRate;
     
-	SInt32							*inputBuffer;
-    SInt32							*outputBuffer;
-	SInt32							*outputBufferSPDIF;
+	//SInt32							*inputBuffer;
+    //SInt32							*outputBuffer;
+	//SInt32							*outputBufferSPDIF;
     
-	IOPhysicalAddress               physicalAddressInput;
-	IOPhysicalAddress               physicalAddressOutput;
-	IOPhysicalAddress               physicalAddressOutputSPDIF;
+	//IOPhysicalAddress               physicalAddressInput;
+	//IOPhysicalAddress               physicalAddressOutput;
+	//IOPhysicalAddress               physicalAddressOutputSPDIF;
     
-    IOFilterInterruptEventSource	*interruptEventSource;
+    struct memhandle inBuffer;
+    struct memhandle outBuffer;
+    struct memhandle outSPDFBuffer;
+    
+    IOFilterInterruptEventSource *interruptEventSource;
 };
 
 #endif /* _Envy24HTAudioEngine_H */

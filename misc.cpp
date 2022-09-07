@@ -14,7 +14,7 @@
 /* Global in Card.c */
 extern const UWORD InputBits[];
 
-unsigned long Dirs[9] = {0x005FFFFF, 0x005FFFFF, 0x001EFFF7, 0x004000FA,
+UInt32 Dirs[9] = {0x005FFFFF, 0x005FFFFF, 0x001EFFF7, 0x004000FA,
                          0x004000FA, 0x007FFF9F, 0x00FFFFFF, 0x00FFFFFF,
                          0x00DFFFFF};
 
@@ -108,7 +108,7 @@ void WriteMask8(IOPCIDevice *dev, IOMemoryMap *map, unsigned char reg, unsigned 
 }
 
 
-void WritePartialMask(IOPCIDevice *dev, IOMemoryMap *map, unsigned char reg, unsigned long shift, unsigned long mask, unsigned long val)
+void WritePartialMask(IOPCIDevice *dev, IOMemoryMap *map, unsigned char reg, UInt32 shift, UInt32 mask, UInt32 val)
 {
     ULONG tmp;
     
@@ -119,7 +119,7 @@ void WritePartialMask(IOPCIDevice *dev, IOMemoryMap *map, unsigned char reg, uns
 }
 
 
-void ClearMask(IOPCIDevice *dev, IOMemoryMap *map, unsigned long reg, unsigned long mask)
+void ClearMask(IOPCIDevice *dev, IOMemoryMap *map, UInt32 reg, UInt32 mask)
 {
     ULONG tmp;
     
@@ -129,7 +129,7 @@ void ClearMask(IOPCIDevice *dev, IOMemoryMap *map, unsigned long reg, unsigned l
 }
 
 
-void WriteMask(IOPCIDevice *dev, IOMemoryMap *map, unsigned long reg, unsigned long mask)
+void WriteMask(IOPCIDevice *dev, IOMemoryMap *map, UInt32 reg, UInt32 mask)
 {
     ULONG tmp;
     
@@ -138,14 +138,14 @@ void WriteMask(IOPCIDevice *dev, IOMemoryMap *map, unsigned long reg, unsigned l
     dev->ioWrite32(reg, tmp, map);
 }
 
-void SetGPIOData(IOPCIDevice *dev, IOMemoryMap *map, unsigned long data)
+void SetGPIOData(IOPCIDevice *dev, IOMemoryMap *map, UInt32 data)
 {
     dev->ioWrite16(CCS_GPIO_DATA, data & 0xFFFF, map);
     dev->ioWrite8(CCS_GPIO_DATA2, (data & (0xFF0000)) >> 16, map);
     dev->ioRead16(CCS_GPIO_DATA, map); /* dummy read for pci-posting */
 }
 
-void SetGPIOMask(IOPCIDevice *dev, IOMemoryMap *map, unsigned long data)
+void SetGPIOMask(IOPCIDevice *dev, IOMemoryMap *map, UInt32 data)
 {
     dev->ioWrite16(CCS_GPIO_MASK, data & 0xFFF, map);
     dev->ioWrite8(CCS_GPIO_MASK2, (data & (0xFF0000)) >> 16, map);
@@ -166,18 +166,17 @@ void RestoreGPIO(IOPCIDevice *dev, struct CardData* card)
     dev->ioWrite16(CCS_GPIO_MASK, card->SavedMask, card->iobase);
 }
 
-
-unsigned long GetGPIOData(IOPCIDevice *dev, IOMemoryMap *map)
+UInt32 GetGPIOData(IOPCIDevice *dev, IOMemoryMap *map)
 {
-    unsigned long data;
+    UInt32 data;
     
-    data = (unsigned long) dev->ioRead8(CCS_GPIO_DATA2, map);
+    data = (UInt32) dev->ioRead8(CCS_GPIO_DATA2, map);
     data = (data << 16) | dev->ioRead16(CCS_GPIO_DATA, map);
     return data;
 }
 
 
-void SetGPIODir(IOPCIDevice *dev, struct CardData* card, unsigned long data)
+void SetGPIODir(IOPCIDevice *dev, struct CardData* card, UInt32 data)
 {
     dev->ioWrite32(CCS_GPIO_DIR, data, card->iobase);
     dev->ioRead16(CCS_GPIO_DIR, card->iobase);
@@ -335,11 +334,11 @@ static void aureon_spi_write(struct CardData *card, IOMemoryMap *base, unsigned 
 
 unsigned char CS8415_read(IOPCIDevice *dev, IOMemoryMap *base, unsigned char reg)
 {
-	unsigned int tmp;
+    unsigned int tmp;
 	int i, bits;
-   unsigned long gpio;
-   unsigned char ret = 0, data;
-   unsigned int cs = AUREON_CS8415_CS;
+    UInt32 gpio;
+    unsigned char ret = 0, data;
+    unsigned int cs = AUREON_CS8415_CS;
 
 	tmp = GetGPIOData(dev, base);
 
@@ -730,161 +729,177 @@ int card_init(struct CardData *card)
     
     if ((dev->ioRead8(CCS_I2C_STATUS, card->iobase) & CCS_I2C_EPROM) != 0)
     {
-	    UInt32 subvendor = 0;
-		UInt8 a,b,c,d;
-		
-		a = ReadI2C(dev, card, 0x00);
-		b = ReadI2C(dev, card, 0x01);
-		c = ReadI2C(dev, card, 0x02);
-		d = ReadI2C(dev, card, 0x03);
-		// for some reason we need to do this twice, leave alone!!
-			
-		a = ReadI2C(dev, card, 0x00);
-		b = ReadI2C(dev, card, 0x01);
-		c = ReadI2C(dev, card, 0x02);
-		d = ReadI2C(dev, card, 0x03);
-		
-		subvendor =
-        		(a << 0) |
-				(b << 8) | 
-				(c << 16) | 
-				(d << 24);
-		
-		card->Specific.name = "Envy24HT";
-		card->Specific.producer = "VIA/ICE";
-		card->Specific.supports192 = true;
-		card->Specific.supports176 = true;
-		
-		//TODO: Find ids for other cards, possibly the aureon universe, add ids for Onkyo cards
+        UInt32 subvendor = 0;
+        UInt8 a,b,c,d;
+        
+        a = ReadI2C(dev, card, 0x00);
+        b = ReadI2C(dev, card, 0x01);
+        c = ReadI2C(dev, card, 0x02);
+        d = ReadI2C(dev, card, 0x03);
+        // for some reason we need to do this twice, leave alone!!
+        
+        a = ReadI2C(dev, card, 0x00);
+        b = ReadI2C(dev, card, 0x01);
+        c = ReadI2C(dev, card, 0x02);
+        d = ReadI2C(dev, card, 0x03);
+        
+        subvendor =
+        (a << 0) |
+        (b << 8) |
+        (c << 16) |
+        (d << 24);
+        
+        card->Specific.name = "Envy24HT";
+        card->Specific.producer = "VIA/ICE";
+        card->Specific.supports192 = true;
+        card->Specific.supports176 = true;
+        
+        //TODO: Find ids for other cards, possibly the aureon universe, add ids for Onkyo cards
         
         switch (subvendor)
         {
-            case SUBVENDOR_AUREON_SKY: card->SubType = AUREON_SKY;
-									IOLog("Found Aureon Sky!\n");
-									card->Specific.name = "Aureon 5.1 Sky";
-									card->Specific.producer = "Terratec";
-									card->Specific.NumChannels = 6;
-									card->Specific.HasSPDIF = true;
-                                    break;
-            
-            case SUBVENDOR_PRODIGY71:
-            case SUBVENDOR_AUREON_SPACE:
-			{
-									card->SubType = AUREON_SPACE;
-									if (subvendor != SUBVENDOR_PRODIGY71){
-										IOLog("Found Aureon Space!\n");
-										card->Specific.name = "Aureon 7.1 Space";
-										card->Specific.producer = "Terratec";
-									}else{
-										IOLog("Found Prodigy 7.1!\n");
-										card->Specific.name = "Prodigy 7.1";
-										card->Specific.producer = "Audiotrak";
-									}
-				
-									card->Specific.supports192 = false;
-									card->Specific.supports176 = false;
-			                        
-									card->Specific.NumChannels = 8;
-									card->Specific.HasSPDIF = true;
-                                    break;
-			}
-            case SUBVENDOR_PHASE28:
-			{
-				card->Specific.supports192 = false;
-				card->Specific.supports176 = false;
-				
-			    card->SubType = PHASE28;
-				card->Specific.NumChannels = 8;
-				card->Specific.HasSPDIF = true;
-			    IOLog("Found Phase28!\n");
-				card->Specific.name = "Producer Phase 28";
-				card->Specific.producer = "Terratec";
+            case SUBVENDOR_AUREON_SKY:
+            {
+                card->SubType = AUREON_SKY;
+                IOLog("Found Aureon Sky!\n");
+                card->Specific.name = "Aureon 5.1 Sky";
+                card->Specific.producer = "Terratec";
+                card->Specific.NumChannels = 6;
+                card->Specific.HasSPDIF = true;
                 break;
-		    }
-
+            }
+            case SUBVENDOR_AUREON_SPACE:
+            {
+                card->SubType = AUREON_SPACE;
+                IOLog("Found Aureon Space!\n");
+                card->Specific.name = "Aureon 7.1 Space";
+                card->Specific.producer = "Terratec";
+                
+                card->Specific.supports192 = false;
+                card->Specific.supports176 = false;
+                
+                card->Specific.NumChannels = 8;
+                card->Specific.HasSPDIF = true;
+                break;
+            }
+            case SUBVENDOR_PHASE28:
+            {
+                card->Specific.supports192 = false;
+                card->Specific.supports176 = false;
+                
+                card->SubType = PHASE28;
+                card->Specific.NumChannels = 8;
+                card->Specific.HasSPDIF = true;
+                IOLog("Found Phase28!\n");
+                card->Specific.name = "Producer Phase 28";
+                card->Specific.producer = "Terratec";
+                break;
+            }
             case SUBVENDOR_MAUDIO_REVOLUTION51:
-									card->SubType = REVO51;
-									card->Specific.NumChannels = 6;
-									card->Specific.HasSPDIF = true;
-                                    IOLog("Found M-Audio Revolution 5.1!\n");
-									card->Specific.name = "Revolution 5.1";
-									card->Specific.producer = "M-Audio";
-                                    break;
-
-            case SUBVENDOR_MAUDIO_REVOLUTION71: 
-									card->SubType = REVO71;
-									card->Specific.NumChannels = 8;
-									card->Specific.HasSPDIF = true;
-                                    IOLog("Found M-Audio Revolution 7.1!\n");
-									card->Specific.name = "Revolution 7.1";
-									card->Specific.producer = "M-Audio";
-									break;
-            
-            case SUBVENDOR_JULIA: card->SubType = JULIA;
-									card->Specific.NumChannels = 2;
-									card->Specific.HasSPDIF = true;
-									IOLog("Found ESI Juli@!\n");
-									card->Specific.name = "ESI Juli@";
-									card->Specific.producer = "ESI";
-                                    break;
-            
+            {
+                card->SubType = REVO51;
+                card->Specific.NumChannels = 6;
+                card->Specific.HasSPDIF = true;
+                IOLog("Found M-Audio Revolution 5.1!\n");
+                card->Specific.name = "Revolution 5.1";
+                card->Specific.producer = "M-Audio";
+                break;
+            }
+            case SUBVENDOR_MAUDIO_REVOLUTION71:
+            {
+                card->SubType = REVO71;
+                card->Specific.NumChannels = 8;
+                card->Specific.HasSPDIF = true;
+                IOLog("Found M-Audio Revolution 7.1!\n");
+                card->Specific.name = "Revolution 7.1";
+                card->Specific.producer = "M-Audio";
+                break;
+            }
+            case SUBVENDOR_JULIA:
+            {
+                card->SubType = JULIA;
+                card->Specific.NumChannels = 2;
+                card->Specific.HasSPDIF = true;
+                IOLog("Found ESI Juli@!\n");
+                card->Specific.name = "ESI Juli@";
+                card->Specific.producer = "ESI";
+                break;
+            }
+            case SUBVENDOR_MAYA44:
+            {
+                card->SubType = MAYA44;
+                card->Specific.NumChannels = 2;
+                card->Specific.HasSPDIF = true;
+                IOLog("Found ESI Maya44!\n");
+                break;
+            }
             case SUBVENDOR_PHASE22:
             case SUBVENDOR_FAME22:
-			{
-				card->Specific.supports192 = false;
-				card->Specific.supports176 = false;
-				
-				card->SubType = PHASE22;
-				card->Specific.NumChannels = 2;
-				card->Specific.HasSPDIF = true;
-				IOLog("Found Phase22!\n");
-				card->Specific.name = "Producer Phase 22";
-				card->Specific.producer = "Terratec";
+            {
+                card->Specific.supports192 = false;
+                card->Specific.supports176 = false;
+                
+                card->SubType = PHASE22;
+                card->Specific.NumChannels = 2;
+                card->Specific.HasSPDIF = true;
+                IOLog("Found Phase22!\n");
+                card->Specific.name = "Producer Phase 22";
+                card->Specific.producer = "Terratec";
                 break;
-		    }
+            }
                 
             case SUBVENDOR_MAUDIO_AP192:
             {
                 card->SubType = AP192;
-				card->Specific.NumChannels = 2;
-				card->Specific.HasSPDIF = true;
-				IOLog("Found Audiophile 192!\n");
-				card->Specific.name = "Audiophile 192";
-				card->Specific.producer = "M-Audio";
+                card->Specific.NumChannels = 2;
+                card->Specific.HasSPDIF = true;
+                IOLog("Found Audiophile 192!\n");
+                card->Specific.name = "Audiophile 192";
+                card->Specific.producer = "M-Audio";
                 break;
             }
                 
+            case SUBVENDOR_PRODIGY71:
+            case VT1724_SUBDEVICE_PRODIGY_HIFI:
+            {
+                card->SubType = AUREON_SPACE;
+                card->Specific.NumChannels = 8;
+                card->Specific.HasSPDIF = true;
+                IOLog("Found AudioTrak Prodigy 7.1 HIFI!\n");
+                card->Specific.name = "Prodigy 7.1 HIFI";
+                card->Specific.producer = "Audiotrak";
+                break;
+            }
             case VT1724_SUBDEVICE_PRODIGY_HD2:
             {
                 card->SubType = PRODIGY_HD2;
-				card->Specific.NumChannels = 2;
-				card->Specific.HasSPDIF = true;
-				IOLog("Found AudioTrak Prodigy HD2!\n");
-				card->Specific.name = "Prodigy HD2";
-				card->Specific.producer = "Audiotrak";
+                card->Specific.NumChannels = 2;
+                card->Specific.HasSPDIF = true;
+                IOLog("Found AudioTrak Prodigy HD2!\n");
+                card->Specific.name = "Prodigy HD2";
+                card->Specific.producer = "Audiotrak";
                 break;
             }
                 
             case SUBVENDOR_CANTATIS:
             {
                 card->SubType = CANTATIS;
-				card->Specific.NumChannels = 2;
-				card->Specific.HasSPDIF = true;
-				IOLog("Found Cantatis card!\n");
-				card->Specific.name = "Cantatis";
+                card->Specific.NumChannels = 2;
+                card->Specific.HasSPDIF = true;
+                IOLog("Found Cantatis card!\n");
+                card->Specific.name = "Cantatis";
                 break;
                 
             }
-            
             default:
-			{
-				IOLog("This specific Envy24HT card with subvendor id %u is not supported!\n", subvendor);
-				IOLog("This Envy24HT driver only supports Terratec Aureon Sky, Space, Phase 22 and 28, M-Audio Revolution 5.1/7.1 and ESI Juli@\n");
+            {
+                IOLog("This specific Envy24HT card with subvendor id %x is not supported!\n", subvendor);
+                IOLog("This Envy24HT driver only supports Terratec Aureon Sky, Space, Phase 22 and 28, M-Audio Revolution 5.1/7.1 and ESI Juli@, MAYA44, Prodigy 7.1 HiFi, Prodigy HD2 \n");
                 return -1;
-			}
+            }
         }
         
-        IOLog("subvendor = %u\n", subvendor);
+        IOLog("subvendor = %x\n", subvendor);
     }
 	
 	card->Specific.BufferSize = NUM_SAMPLE_FRAMES * card->Specific.NumChannels * (BIT_DEPTH / 8);
@@ -913,7 +928,7 @@ int card_init(struct CardData *card)
            
        dev->ioWrite8(CCS_ACLINK_CONFIG, CCS_ACLINK_I2S, card->iobase); // I2S in split mode
        
-       if (card->SubType != JULIA)
+       if (card->SubType != JULIA && card->SubType != MAYA44)
            dev->ioWrite8(CCS_I2S_FEATURES, CCS_I2S_VOLMUTE | CCS_I2S_96KHZ | CCS_I2S_24BIT | CCS_I2S_192KHZ, card->iobase);
        
        if (card->SubType == REVO71 || card->SubType == REVO51)
@@ -939,7 +954,7 @@ int card_init(struct CardData *card)
        dev->ioWrite16(CCS_GPIO_DATA, 0x0072, card->iobase);
        dev->ioWrite8(CCS_GPIO_DATA2, 0x00, card->iobase);
        }
-    else if (card->SubType == JULIA) {
+    else if (card->SubType == JULIA || card->SubType != MAYA44) {
        dev->ioWrite16(CCS_GPIO_DATA, 0x3819, card->iobase);
        }
     else if (card->SubType == AP192) {
@@ -1146,6 +1161,53 @@ int card_init(struct CardData *card)
 			WriteI2C(dev, card, AK4114_ADDR, reg, data);
             MicroDelay(100);
             }
+        
+        dev->ioWrite8(MT_SAMPLERATE, 8, card->mtbase);
+        //dev->ioWrite32(0x2C, 0x300200, card->mtbase); // routes analogue in to analogue out
+        
+        CreateParmsForJulia(card);
+    }
+    else if (card->SubType == MAYA44)
+    {
+        dev->ioWrite8(CCS_SYSTEM_CONFIG, 0x78, card->iobase);
+        dev->ioWrite8(CCS_ACLINK_CONFIG, CCS_ACLINK_I2S, card->iobase); // I2S in split mode
+        dev->ioWrite8(CCS_I2S_FEATURES, CCS_I2S_96KHZ | CCS_I2S_24BIT | CCS_I2S_192KHZ, card->iobase);
+        dev->ioWrite8(CCS_SPDIF_CONFIG, CCS_SPDIF_INTEGRATED | CCS_SPDIF_INTERNAL_OUT | CCS_SPDIF_IN_PRESENT | CCS_SPDIF_EXTERNAL_OUT, card->iobase);
+        
+        
+        unsigned char *ptr, reg, data;
+        
+        static unsigned char inits_ak4114[] = {
+            0x00, 0x00, // power down & reset
+            0x00, 0x0F, // power on
+            0x01, 0x70, // I2S
+            0x02, 0x80, // TX1 output enable
+            0x03, 0x49, // 1024 LRCK + transmit data
+            0x04, 0x00, // no mask
+            0x05, 0x00, // no mask
+            0x0D, 0x41, //
+            0x0E, 0x02,
+            0x0F, 0x2C,
+            0x10, 0x00,
+            0x11, 0x00,
+            0xff, 0xff
+        };
+        
+        ptr = inits_ak4358;
+        while (*ptr != 0xff) {
+            reg = *ptr++;
+            data = *ptr++;
+            WriteI2C(dev, card, AK4358_ADDR, reg, data);
+            MicroDelay(5);
+        }
+        
+        ptr = inits_ak4114;
+        while (*ptr != 0xff) {
+            reg = *ptr++;
+            data = *ptr++;
+            WriteI2C(dev, card, AK4114_ADDR, reg, data);
+            MicroDelay(100);
+        }
         
         dev->ioWrite8(MT_SAMPLERATE, 8, card->mtbase);
         //dev->ioWrite32(0x2C, 0x300200, card->mtbase); // routes analogue in to analogue out
@@ -1536,7 +1598,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->MindB = (-48 << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultLeft + 6; 
-    p->Name = "Output 6";
+    p->Name = "Output 7";
     p->ControlID = 6;
     p->Usage = kIOAudioControlUsageOutput;
     p->reg = 0x8;
@@ -1557,7 +1619,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->MindB = (-48 << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultRight + 7; 
-    p->Name = "Output 7";
+    p->Name = "Output 8";
     p->ControlID = 7;
     p->Usage = kIOAudioControlUsageOutput;
     p->reg = 0x9;
@@ -1803,6 +1865,131 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     
     IOLog("CreateParmsForAureonSpace\n");
     
+    // third output
+    prev = p;
+    p = new Parm;
+    prev->Next = p;
+    p->InitialValue = 0xFF;
+    p->MinValue = 0xB9;
+    p->MaxValue = 0xFF;
+    p->MindB = (-35 << 16) + 32768;
+    p->MaxdB = 0;
+    p->ChannelID = kIOAudioControlChannelIDDefaultLeft +2;
+    p->Name =  "Output 3";
+    p->ControlID = 2;
+    p->Usage = kIOAudioControlUsageOutput;
+    p->reg = 0xB;
+    p->reverse = false;
+    p->I2C = false;
+    p->I2C_codec_addr = 0;
+    p->HasMute = false;
+    p->codec = NULL;
+    
+    
+    // fourth output
+    prev = p;
+    p = new Parm;
+    prev->Next = p;
+    p->InitialValue = 0xFF;
+    p->MinValue = 0xB9;
+    p->MaxValue = 0xFF;
+    p->MindB = (-35 << 16) + 32768;
+    p->MaxdB = 0;
+    p->ChannelID = kIOAudioControlChannelIDDefaultRight +2;
+    p->Name =  "Output 4";
+    p->ControlID = 3;
+    p->Usage = kIOAudioControlUsageOutput;
+    p->reg = 0xC;
+    p->reverse = false;
+    p->I2C = false;
+    p->I2C_codec_addr = 0;
+    p->HasMute = false;
+    p->codec = NULL;
+    
+    
+    // fifth output
+    prev = p;
+    p = new Parm;
+    prev->Next = p;
+    p->InitialValue = 0xFF;
+    p->MinValue = 0xB9;
+    p->MaxValue = 0xFF;
+    p->MindB = (-35 << 16) + 32768;
+    p->MaxdB = 0;
+    p->ChannelID = kIOAudioControlChannelIDDefaultLeft +4;
+    p->Name =  "Output 5";
+    p->ControlID = 4;
+    p->Usage = kIOAudioControlUsageOutput;
+    p->reg = 0xD;
+    p->reverse = false;
+    p->I2C = false;
+    p->I2C_codec_addr = 0;
+    p->HasMute = false;
+    p->codec = NULL;
+    
+    
+    // sixth output
+    prev = p;
+    p = new Parm;
+    prev->Next = p;
+    p->InitialValue = 0xFF;
+    p->MinValue = 0xB9;
+    p->MaxValue = 0xFF;
+    p->MindB = (-35 << 16) + 32768;
+    p->MaxdB = 0;
+    p->ChannelID = kIOAudioControlChannelIDDefaultRight +4;
+    p->Name =  "Output 6";
+    p->ControlID = 5;
+    p->Usage = kIOAudioControlUsageOutput;
+    p->reg = 0xE;
+    p->reverse = false;
+    p->I2C = false;
+    p->I2C_codec_addr = 0;
+    p->HasMute = false;
+    p->codec = NULL;
+    
+    
+    // seventh output
+    prev = p;
+    p = new Parm;
+    prev->Next = p;
+    p->InitialValue = 0xFF;
+    p->MinValue = 0xB9;
+    p->MaxValue = 0xFF;
+    p->MindB = (-35 << 16) + 32768;
+    p->MaxdB = 0;
+    p->ChannelID = kIOAudioControlChannelIDDefaultLeft +6;
+    p->Name =  "Output 7";
+    p->ControlID = 6;
+    p->Usage = kIOAudioControlUsageOutput;
+    p->reg = 0xF;
+    p->reverse = false;
+    p->I2C = false;
+    p->I2C_codec_addr = 0;
+    p->HasMute = false;
+    p->codec = NULL;
+    
+    
+    // eigth output
+    prev = p;
+    p = new Parm;
+    prev->Next = p;
+    p->InitialValue = 0xFF;
+    p->MinValue = 0xB9;
+    p->MaxValue = 0xFF;
+    p->MindB = (-35 << 16) + 32768;
+    p->MaxdB = 0;
+    p->ChannelID = kIOAudioControlChannelIDDefaultRight +6;
+    p->Name =  "Output 8";
+    p->ControlID = 7;
+    p->Usage = kIOAudioControlUsageOutput;
+    p->reg = 0x10;
+    p->reverse = false;
+    p->I2C = false;
+    p->I2C_codec_addr = 0;
+    p->HasMute = false;
+    p->codec = NULL;
+    
     // left output
     p->InitialValue = 0xFF;
     p->MinValue = 0xB9;
@@ -1859,7 +2046,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->MaxdB = (19 << 16) + 32768;
     p->ChannelID = kIOAudioControlChannelIDDefaultLeft; 
     p->Name = kIOAudioControlChannelNameLeft;
-    p->ControlID = 2;
+    p->ControlID = 8;
     p->Usage = kIOAudioControlUsageInput;
     p->reg = 0x19;
     p->reverse = false;  
@@ -1880,7 +2067,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->MaxdB = (19 << 16) + 32768;
     p->ChannelID = kIOAudioControlChannelIDDefaultRight; 
     p->Name = kIOAudioControlChannelNameRight;
-    p->ControlID = 3;
+    p->ControlID = 9;
     p->Usage = kIOAudioControlUsageInput;
     p->reg = 0x1A;
     p->reverse = false; 
@@ -1889,4 +2076,56 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->codec = NULL;
     p->HasMute = false;
     p->Next = NULL;
+}
+
+int pci_alloc(struct memhandle *h)
+{
+    
+#if defined(OLD_ALLOC)
+    
+#warning "Using old dma memory allocation method"
+    
+    IOPhysicalAddress physical;
+    h->addr=IOMallocContiguous((vm_size_t)h->size,PAGE_SIZE,&physical);
+    h->dma_handle = (dword)physical;
+    
+    if (!(h->addr) || !(h->dma_handle))
+        return -1;
+#else
+    
+    //h->addr=IOMallocContiguous(h->size,PAGE_SIZE,&phys_addr);
+    mach_vm_address_t mask = allocation_mask; //0x000000007FFFFFFFULL & ~(PAGE_SIZE - 1);
+    
+    h->desc = IOBufferMemoryDescriptor::inTaskWithPhysicalMask(
+                                                               kernel_task,
+                                                               kIODirectionInOut | kIOMemoryPhysicallyContiguous,
+                                                               h->size,
+                                                               mask);
+    
+    if (!h->desc)
+        return -1;
+    
+    h->desc->prepare();
+    
+    h->addr =              h->desc->getBytesNoCopy    ();
+    h->dma_handle = (UInt32)h->desc->getPhysicalAddress();
+#endif
+    
+    //buffer cleaning
+    bzero((unsigned char*)h->addr, h->size);
+    
+    return 0;
+}
+
+void pci_free(struct memhandle *h)
+{
+    const size_t size = h->size;
+#if defined(OLD_ALLOC)
+    #warning "Using old dma memory allocation method"
+    IOFreeContiguous(h->addr,h->size);
+#else
+    h->desc->release();
+#endif
+    memset(h, 0, sizeof(*h));
+    h->size = size;
 }

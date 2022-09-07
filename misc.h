@@ -1,17 +1,20 @@
-#include <DriverData.h>
+#include "DriverData.h"
+#include <IOKit/IOLib.h>
 
-unsigned long GetGPIOData(IOPCIDevice *dev, IOMemoryMap *base);
-void SetGPIOData(IOPCIDevice *dev, IOMemoryMap *base, unsigned long data);
-void SetGPIOMask(IOPCIDevice *dev, IOMemoryMap *base, unsigned long data);
+#ifndef MISC_H
+#define MISC_H
+UInt32 GetGPIOData(IOPCIDevice *dev, IOMemoryMap *base);
+void SetGPIOData(IOPCIDevice *dev, IOMemoryMap *base, UInt32 data);
+void SetGPIOMask(IOPCIDevice *dev, IOMemoryMap *base, UInt32 data);
 
 void WritePartialMask8(IOPCIDevice *dev, IOMemoryMap *base, unsigned char reg, unsigned char shift, unsigned char mask, unsigned char val);
 void ClearMask8(IOPCIDevice *dev, IOMemoryMap *base, unsigned char reg, unsigned char mask);
 void WriteMask8(IOPCIDevice *dev, IOMemoryMap *base, unsigned char reg, unsigned char mask);
 
 
-void WritePartialMask(IOPCIDevice *dev, IOMemoryMap *base, unsigned char reg, unsigned long shift, unsigned long mask, unsigned long val);
-void ClearMask(IOPCIDevice *dev, IOMemoryMap *base, unsigned long reg, unsigned long mask);
-void WriteMask(IOPCIDevice *dev, IOMemoryMap *base, unsigned long reg, unsigned long mask);
+void WritePartialMask(IOPCIDevice *dev, IOMemoryMap *base, unsigned char reg, UInt32 shift, UInt32 mask, UInt32 val);
+void ClearMask(IOPCIDevice *dev, IOMemoryMap *base, UInt32 reg, UInt32 mask);
+void WriteMask(IOPCIDevice *dev, IOMemoryMap *base, UInt32 reg, UInt32 mask);
 void MicroDelay(unsigned int val);
 
 void revo_i2s_mclk_changed(struct CardData *card);
@@ -25,7 +28,7 @@ void WriteI2C(IOPCIDevice *dev, struct CardData *card, unsigned chip_address, un
 
 void SaveGPIO(IOPCIDevice *dev, struct CardData* card);
 void RestoreGPIO(IOPCIDevice *dev, struct CardData* card);
-void SetGPIODir(IOPCIDevice *dev, struct CardData* card, unsigned long data);
+void SetGPIODir(IOPCIDevice *dev, struct CardData* card, UInt32 data);
 
 int card_init(struct CardData *card);
 
@@ -47,6 +50,31 @@ UpdateMonitorMixer( struct CardData* card );
 ULONG
 SamplerateToLinearPitch( ULONG samplingrate );
 
+/*
 void *pci_alloc_consistent(size_t size, void *NonAlignedAddress);
 
 void pci_free_consistent(void* addr);
+*/
+
+#ifndef _IOBUFFERMEMORYDESCRIPTOR_H
+class IOBufferMemoryDescriptor;
+#endif
+
+struct memhandle
+{
+    // note: this is for 32-bit OS only
+    size_t size;
+    void * addr;          // virtual
+    UInt32 dma_handle;    // physical
+    
+#if !defined(OLD_ALLOC)
+    IOBufferMemoryDescriptor *desc;
+#endif
+};
+
+#define allocation_mask ((0x000000007FFFFFFFULL) & (~((PAGE_SIZE) - 1)))
+
+int pci_alloc(struct memhandle *h);
+void pci_free(struct memhandle *h);
+
+#endif

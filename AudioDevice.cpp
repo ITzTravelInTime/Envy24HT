@@ -391,10 +391,10 @@ IOReturn Envy24HTAudioDevice::gainChangeHandler(IOService *target, IOAudioContro
 
 IOReturn Envy24HTAudioDevice::gainChanged(IOAudioControl *gainControl, SInt32 oldValue, SInt32 newValue)
 {
-    DBGPRINT("Envy24HTAudioDevice[%p]::gainChanged(%p, %ld, %ld)\n", this, gainControl, (long int)oldValue, (long int)newValue);
+    DBGPRINT("Envy24HTAudioDevice[%p]::gainChanged(%p, %x, %x)\n", this, gainControl, (UInt32)oldValue, (UInt32)newValue);
     
     if (gainControl) {
-        DBGPRINT("\t-> Channel %ld\n", (long int)gainControl->getChannelID());
+        DBGPRINT("\t-> Channel %x\n", (UInt32)gainControl->getChannelID());
     }
     
     // Add hardware gain change code here 
@@ -417,7 +417,7 @@ IOReturn Envy24HTAudioDevice::inputMuteChangeHandler(IOService *target, IOAudioC
 
 IOReturn Envy24HTAudioDevice::inputMuteChanged(IOAudioControl *muteControl, SInt32 oldValue, SInt32 newValue)
 {
-    DBGPRINT("Envy24HTAudioDevice[%p]::inputMuteChanged(%p, %ld, %ld)\n", this, muteControl, (long int)oldValue, (long int)newValue);
+    DBGPRINT("Envy24HTAudioDevice[%p]::inputMuteChanged(%p, %u, %u)\n", this, muteControl, (UInt32)oldValue, (UInt32)newValue);
     
     // Add input mute change code here
 //#warning TODO inputMuteChanged()    
@@ -461,13 +461,13 @@ void Envy24HTAudioDevice::dumpRegisters()
     DBGPRINT("Envy24HTAudioDevice[%p]::dumpRegisters()\n", this);
 	int i;
 	
-	DBGPRINT("iobase = %lx, mtbase = %lx\n", card->iobase->getPhysicalAddress(), card->mtbase->getPhysicalAddress());
+	DBGPRINT("iobase = %llx, mtbase = %llx\n", card->iobase->getPhysicalAddress(), card->mtbase->getPhysicalAddress());
 	// config
 	DBGPRINT("Vendor id = %x\n", card->pci_dev->configRead16(0));
 	DBGPRINT("Device id = %x\n", card->pci_dev->configRead16(2));
 	DBGPRINT("PCI command id = %x\n", card->pci_dev->configRead16(4));
-	DBGPRINT("iobase = %lx\n", card->pci_dev->configRead32(0x10));
-	DBGPRINT("mtbase = %lx\n", card->pci_dev->configRead32(0x14));
+	DBGPRINT("iobase = %x\n", card->pci_dev->configRead32(0x10));
+	DBGPRINT("mtbase = %x\n", card->pci_dev->configRead32(0x14));
 	
 	DBGPRINT("---\n");
 	for (i = 0; i <= 0x1F; i++)
@@ -478,7 +478,7 @@ void Envy24HTAudioDevice::dumpRegisters()
 	DBGPRINT("---\n");
 	for (i = 0; i <= 0x44; i+=4)
 	{
-	  DBGPRINT("MT %02d: %lx\n", i, card->pci_dev->ioRead32(i, card->mtbase));
+	  DBGPRINT("MT %02d: %x\n", i, card->pci_dev->ioRead32(i, card->mtbase));
 	}
     IOSleep(3000);
 }

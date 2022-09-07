@@ -24,7 +24,7 @@
 static void
 GPIOWrite(struct CardData *card, unsigned long pos, unsigned long bit)
 {
-  unsigned long data = GetGPIOData(card->pci_dev, card->iobase);
+  UInt32 data = GetGPIOData(card->pci_dev, card->iobase);
 
   bit = (bit != 0);
 
@@ -371,8 +371,7 @@ ap192_set_rate (struct CardData *card, unsigned long speed)
 }
 
 static void
-ap192_audio_ioctl (struct CardData *card, int cmd,
-		   int *arg)
+ap192_audio_ioctl (struct CardData *card, int cmd, int *arg)
 {
 #if 0
   int left, right, value;
