@@ -1,6 +1,16 @@
 #ifndef _Envy24HTAudioEngine_H
 #define _Envy24HTAudioEngine_H
 
+#if defined(i386) || defined(I386) || defined(IX86) || defined(__I386__) || defined(_IX86) || defined(_M_IX86) || defined(AMD64) || defined(__x86_64__) || defined(__i386__)
+    #define X86
+#elif defined(__PPC__) || defined(__ppc__) || defined(_ARCH_PPC) || defined(__POWERPC__) || defined(__powerpc) || defined(__powerpc__)
+    #define PPC
+#elif(defined(__ARM__) || defined(__arm__) || defined(_ARCH_ARM) || defined(_ARCH_ARM64) || defined(__aarch64e__) || defined(__arm) || defined(__arm64e__) || defined(__aarch64__))
+    #define ARM
+#else
+    #error "Unknown processor architecture"
+#endif
+
 #include <IOKit/audio/IOAudioEngine.h>
 
 #include "AudioDevice.h"
@@ -38,8 +48,6 @@ public:
     virtual IOReturn clipOutputSamples(const void *mixBuf, void *sampleBuf, UInt32 firstSampleFrame, UInt32 numSampleFrames, const IOAudioStreamFormat *streamFormat, IOAudioStream *audioStream);
     virtual IOReturn convertInputSamples(const void *sampleBuf, void *destBuf, UInt32 firstSampleFrame, UInt32 numSampleFrames, const IOAudioStreamFormat *streamFormat, IOAudioStream *audioStream);
     
-    static void interruptHandler(OSObject *owner, IOInterruptEventSource *source, int count);
-    static bool interruptFilter(OSObject *owner, IOFilterInterruptEventSource *source);
     virtual void filterInterrupt(int index);
 	
 	virtual IOReturn eraseOutputSamples(const void *mixBuf,
@@ -49,6 +57,10 @@ public:
 									    const IOAudioStreamFormat *streamFormat,
 										IOAudioStream *audioStream);
 	
+#if defined(ARM)
+    virtual bool driverDesiresHiResSampleIntervals(void);
+#endif
+    
 private:
 	struct CardData				   *card;
 	UInt32							currentSampleRate;
@@ -66,6 +78,9 @@ private:
     struct memhandle outSPDFBuffer;
     
     IOFilterInterruptEventSource *interruptEventSource;
+    
+    static void interruptHandler(OSObject *owner, IOInterruptEventSource *source, int count);
+    static bool interruptFilter(OSObject *owner, IOFilterInterruptEventSource *source);
 };
 
 #endif /* _Envy24HTAudioEngine_H */

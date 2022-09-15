@@ -17,14 +17,6 @@
 #include <libkern/OSTypes.h>
 #include <libkern/OSByteOrder.h>
 
-#if defined(i386) || defined(I386) || defined(IX86) || defined(__I386__) || defined(_IX86) || defined(_M_IX86) || defined(AMD64) || defined(__x86_64__) || defined(__i386__)
-    #define X86
-#elif defined(__PPC__) || defined(__ppc__) || defined(_ARCH_PPC) || defined(__POWERPC__) || defined(__powerpc) || defined(__powerpc__)
-    #define PPC
-#else
-    #error "Unknown processor architecture"
-#endif
-
 inline static UInt32 correctEndianess32(const UInt32 number){
     return OSSwapHostToLittleInt32(number);
 }

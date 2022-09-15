@@ -667,3 +667,9 @@ void Envy24HTAudioEngine::dumpRegisters()
 
     IOSleep(4000);
 }
+
+#if defined(ARM)
+bool Envy24HTAudioEngine::driverDesiresHiResSampleIntervals(){
+    return TRUE; //to be changed probably, idk
+}
+#endif
