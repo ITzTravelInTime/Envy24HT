@@ -97,17 +97,9 @@ bool Envy24HTAudioEngine::init(struct CardData* i_card)
 	}
 	card = i_card;
 	
-    inBuffer.addr = NULL;
-    inBuffer.dma_handle = 0;
-    inBuffer.size = card->Specific.BufferSizeRec;
-    
-    outBuffer.addr = NULL;
-    outBuffer.dma_handle = 0;
-    outBuffer.size = card->Specific.BufferSize;
-    
-    outSPDFBuffer.addr = NULL;
-    outSPDFBuffer.dma_handle = 0;
-    outSPDFBuffer.size = card->Specific.BufferSizeRec;
+	bzero(&inBuffer, sizeof(struct memhandle));
+	bzero(&outBuffer, sizeof(struct memhandle));
+	bzero(&outSPDFBuffer, sizeof(struct memhandle));
     
     result = true;
     
@@ -177,6 +169,18 @@ bool Envy24HTAudioEngine::initHardware(IOService *provider)
 	card->pci_dev->ioWrite32(MT_RDMA0_ADDRESS, physicalAddressInput, card->mtbase);
 	card->pci_dev->ioWrite32(MT_PDMA4_ADDRESS, physicalAddressOutputSPDIF, card->mtbase); // SPDIF
     */
+	
+	inBuffer.addr = NULL;
+    inBuffer.dma_handle = 0;
+    inBuffer.size = card->Specific.BufferSizeRec;
+    
+    outBuffer.addr = NULL;
+    outBuffer.dma_handle = 0;
+    outBuffer.size = card->Specific.BufferSize;
+    
+    outSPDFBuffer.addr = NULL;
+    outSPDFBuffer.dma_handle = 0;
+    outSPDFBuffer.size = card->Specific.BufferSizeRec;
     
     if (pci_alloc(&outBuffer)){
         goto Done;

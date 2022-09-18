@@ -2111,6 +2111,8 @@ int pci_alloc(struct memhandle *h)
     h->dma_handle = (UInt32)h->desc->getPhysicalAddress();
 #endif
     
+	IOLog("Envy24HTAudioDriver::DMA Buffer allocated successfully\n");
+	
     //buffer cleaning
     bzero((unsigned char*)h->addr, h->size);
     
