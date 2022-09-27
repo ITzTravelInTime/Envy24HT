@@ -24,6 +24,7 @@ int aureon_ac97_init(IOPCIDevice *dev, IOMemoryMap *map);
 void AddResetHandler(struct CardData *card);
 unsigned char ReadI2CDelay(IOPCIDevice *dev, struct CardData *card, unsigned char addr, int delay);
 
+static void CreateParmsForProdigyHiFi(struct CardData *card);
 static void CreateParmsForJulia(struct CardData *card);
 static void CreateParmsForPhase22(struct CardData *card);
 static void CreateParmsForRevo71(struct CardData *card);
@@ -200,7 +201,7 @@ void WaitForI2C(IOPCIDevice *dev, struct CardData *card)
 		MicroDelay(32);
 	}
 
-	IOLog("WaitForI2C() failed!\n");
+	IOLog("Envy24HTAudioDriver::WaitForI2C() failed!\n");
 	IOSleep(5000);
 }
 
@@ -749,6 +750,7 @@ int card_init(struct CardData *card)
         (c << 16) |
         (d << 24);
         
+        card->Specific.subvendorID = subvendor;
         card->Specific.name = "Envy24HT";
         card->Specific.producer = "VIA/ICE";
         card->Specific.supports192 = true;
@@ -761,7 +763,7 @@ int card_init(struct CardData *card)
             case SUBVENDOR_AUREON_SKY:
             {
                 card->SubType = AUREON_SKY;
-                IOLog("Found Aureon Sky!\n");
+                IOLog("Envy24HTAudioDriver::Found Aureon Sky!\n");
                 card->Specific.name = "Aureon 5.1 Sky";
                 card->Specific.producer = "Terratec";
                 card->Specific.NumChannels = 6;
@@ -771,9 +773,23 @@ int card_init(struct CardData *card)
             case SUBVENDOR_AUREON_SPACE:
             {
                 card->SubType = AUREON_SPACE;
-                IOLog("Found Aureon Space!\n");
+                IOLog("Envy24HTAudioDriver::Found Aureon Space!\n");
                 card->Specific.name = "Aureon 7.1 Space";
                 card->Specific.producer = "Terratec";
+                
+                card->Specific.supports192 = false;
+                card->Specific.supports176 = false;
+                
+                card->Specific.NumChannels = 8;
+                card->Specific.HasSPDIF = true;
+                break;
+            }
+            case SUBVENDOR_PRODIGY71:
+            {
+                card->SubType = AUREON_SPACE;
+                IOLog("Envy24HTAudioDriver::Found Prodigy 7.1!\n");
+                card->Specific.name = "Prodigy 7.1";
+                card->Specific.producer = "Audiotrak/ESI";
                 
                 card->Specific.supports192 = false;
                 card->Specific.supports176 = false;
@@ -790,7 +806,7 @@ int card_init(struct CardData *card)
                 card->SubType = PHASE28;
                 card->Specific.NumChannels = 8;
                 card->Specific.HasSPDIF = true;
-                IOLog("Found Phase28!\n");
+                IOLog("Envy24HTAudioDriver::Found Phase28!\n");
                 card->Specific.name = "Producer Phase 28";
                 card->Specific.producer = "Terratec";
                 break;
@@ -800,7 +816,7 @@ int card_init(struct CardData *card)
                 card->SubType = REVO51;
                 card->Specific.NumChannels = 6;
                 card->Specific.HasSPDIF = true;
-                IOLog("Found M-Audio Revolution 5.1!\n");
+                IOLog("Envy24HTAudioDriver::Found M-Audio Revolution 5.1!\n");
                 card->Specific.name = "Revolution 5.1";
                 card->Specific.producer = "M-Audio";
                 break;
@@ -810,7 +826,7 @@ int card_init(struct CardData *card)
                 card->SubType = REVO71;
                 card->Specific.NumChannels = 8;
                 card->Specific.HasSPDIF = true;
-                IOLog("Found M-Audio Revolution 7.1!\n");
+                IOLog("Envy24HTAudioDriver::Found M-Audio Revolution 7.1!\n");
                 card->Specific.name = "Revolution 7.1";
                 card->Specific.producer = "M-Audio";
                 break;
@@ -820,7 +836,7 @@ int card_init(struct CardData *card)
                 card->SubType = JULIA;
                 card->Specific.NumChannels = 2;
                 card->Specific.HasSPDIF = true;
-                IOLog("Found ESI Juli@!\n");
+                IOLog("Envy24HTAudioDriver::Found ESI Juli@!\n");
                 card->Specific.name = "ESI Juli@";
                 card->Specific.producer = "ESI";
                 break;
@@ -830,7 +846,9 @@ int card_init(struct CardData *card)
                 card->SubType = MAYA44;
                 card->Specific.NumChannels = 2;
                 card->Specific.HasSPDIF = true;
-                IOLog("Found ESI Maya44!\n");
+                IOLog("Envy24HTAudioDriver::Found ESI Maya44!\n");
+                card->Specific.name = "MAYA 44";
+                card->Specific.producer = "Audiotrak/ESI";
                 break;
             }
             case SUBVENDOR_PHASE22:
@@ -842,7 +860,7 @@ int card_init(struct CardData *card)
                 card->SubType = PHASE22;
                 card->Specific.NumChannels = 2;
                 card->Specific.HasSPDIF = true;
-                IOLog("Found Phase22!\n");
+                IOLog("Envy24HTAudioDriver::Found Phase22!\n");
                 card->Specific.name = "Producer Phase 22";
                 card->Specific.producer = "Terratec";
                 break;
@@ -853,21 +871,20 @@ int card_init(struct CardData *card)
                 card->SubType = AP192;
                 card->Specific.NumChannels = 2;
                 card->Specific.HasSPDIF = true;
-                IOLog("Found Audiophile 192!\n");
+                IOLog("Envy24HTAudioDriver::Found Audiophile 192!\n");
                 card->Specific.name = "Audiophile 192";
                 card->Specific.producer = "M-Audio";
                 break;
             }
-                
-            case SUBVENDOR_PRODIGY71:
             case VT1724_SUBDEVICE_PRODIGY_HIFI:
             {
-                card->SubType = AUREON_SPACE;
-                card->Specific.NumChannels = 8;
+                card->SubType = PRODIGY_HIFI;//AUREON_SPACE;
+                card->Specific.NumChannels = 2;
                 card->Specific.HasSPDIF = true;
-                IOLog("Found AudioTrak Prodigy 7.1 HIFI!\n");
+                IOLog("Envy24HTAudioDriver::Found AudioTrak Prodigy 7.1 HIFI!\n");
                 card->Specific.name = "Prodigy 7.1 HIFI";
-                card->Specific.producer = "Audiotrak";
+                card->Specific.producer = "Audiotrak/ESI";
+                card->Specific.supports176 = false;
                 break;
             }
             case VT1724_SUBDEVICE_PRODIGY_HD2:
@@ -875,7 +892,7 @@ int card_init(struct CardData *card)
                 card->SubType = PRODIGY_HD2;
                 card->Specific.NumChannels = 2;
                 card->Specific.HasSPDIF = true;
-                IOLog("Found AudioTrak Prodigy HD2!\n");
+                IOLog("Envy24HTAudioDriver::Found AudioTrak Prodigy HD2!\n");
                 card->Specific.name = "Prodigy HD2";
                 card->Specific.producer = "Audiotrak";
                 break;
@@ -886,20 +903,20 @@ int card_init(struct CardData *card)
                 card->SubType = CANTATIS;
                 card->Specific.NumChannels = 2;
                 card->Specific.HasSPDIF = true;
-                IOLog("Found Cantatis card!\n");
+                IOLog("Envy24HTAudioDriver::Found Cantatis card!\n");
                 card->Specific.name = "Cantatis";
                 break;
                 
             }
             default:
             {
-                IOLog("This specific Envy24HT card with subvendor id %x is not supported!\n", subvendor);
-                IOLog("This Envy24HT driver only supports Terratec Aureon Sky, Space, Phase 22 and 28, M-Audio Revolution 5.1/7.1 and ESI Juli@, MAYA44, Prodigy 7.1 HiFi, Prodigy HD2 \n");
+                IOLog("Envy24HTAudioDriver::  !!This specific Envy24HT card with subvendor id %x is not supported!\n", subvendor);
+                IOLog("Envy24HTAudioDriver::\n\nThis Envy24HT driver only supports Terratec Aureon Sky, Space, Phase 22 and 28, M-Audio Revolution 5.1/7.1 and ESI Juli@, MAYA44, Prodigy 7.1 HiFi, Prodigy HD2 \n");
                 return -1;
             }
         }
         
-        IOLog("subvendor = %x\n", subvendor);
+        IOLog("Envy24HTAudioDriver::subvendor = %x\n", subvendor);
     }
 	
 	card->Specific.BufferSize = NUM_SAMPLE_FRAMES * card->Specific.NumChannels * (BIT_DEPTH / 8);
@@ -928,7 +945,7 @@ int card_init(struct CardData *card)
            
        dev->ioWrite8(CCS_ACLINK_CONFIG, CCS_ACLINK_I2S, card->iobase); // I2S in split mode
        
-       if (card->SubType != JULIA && card->SubType != MAYA44)
+       if (card->SubType != JULIA && card->SubType != MAYA44 && card->SubType != PRODIGY_HIFI)
            dev->ioWrite8(CCS_I2S_FEATURES, CCS_I2S_VOLMUTE | CCS_I2S_96KHZ | CCS_I2S_24BIT | CCS_I2S_192KHZ, card->iobase);
        
        if (card->SubType == REVO71 || card->SubType == REVO51)
@@ -953,18 +970,15 @@ int card_init(struct CardData *card)
     if (card->SubType == REVO71 || card->SubType == REVO51) {
        dev->ioWrite16(CCS_GPIO_DATA, 0x0072, card->iobase);
        dev->ioWrite8(CCS_GPIO_DATA2, 0x00, card->iobase);
-       }
-    else if (card->SubType == JULIA || card->SubType != MAYA44) {
+    }else if (card->SubType == JULIA || card->SubType != MAYA44 || card->SubType != PRODIGY_HIFI) {
        dev->ioWrite16(CCS_GPIO_DATA, 0x3819, card->iobase);
-       }
-    else if (card->SubType == AP192) {
+    }else if (card->SubType == AP192) {
         dev->ioWrite16(CCS_GPIO_DATA, 0xFFFF, card->iobase);   
-    }
-    else {
+    }else {
        dev->ioWrite16(CCS_GPIO_DATA, 0x0000, card->iobase);
        if (card->SubType != PHASE22)
            dev->ioWrite8(CCS_GPIO_DATA2, 0x0, card->iobase);
-       }
+    }
     dev->ioRead16(CCS_GPIO_DATA, card->iobase);
     
     //SaveGPIO(dev, card);
@@ -1174,7 +1188,6 @@ int card_init(struct CardData *card)
         dev->ioWrite8(CCS_I2S_FEATURES, CCS_I2S_96KHZ | CCS_I2S_24BIT | CCS_I2S_192KHZ, card->iobase);
         dev->ioWrite8(CCS_SPDIF_CONFIG, CCS_SPDIF_INTEGRATED | CCS_SPDIF_INTERNAL_OUT | CCS_SPDIF_IN_PRESENT | CCS_SPDIF_EXTERNAL_OUT, card->iobase);
         
-        
         unsigned char *ptr, reg, data;
         
         static unsigned char inits_ak4114[] = {
@@ -1213,6 +1226,60 @@ int card_init(struct CardData *card)
         //dev->ioWrite32(0x2C, 0x300200, card->mtbase); // routes analogue in to analogue out
         
         CreateParmsForJulia(card);
+    }
+    else if (card->SubType == PRODIGY_HIFI)
+    {
+        //dev->ioWrite8(CCS_SYSTEM_CONFIG, 0x78, card->iobase);
+        //dev->ioWrite8(CCS_ACLINK_CONFIG, CCS_ACLINK_I2S, card->iobase); // I2S in split mode
+        //dev->ioWrite8(CCS_I2S_FEATURES, CCS_I2S_96KHZ | CCS_I2S_24BIT | CCS_I2S_192KHZ, card->iobase);
+        //dev->ioWrite8(CCS_SPDIF_CONFIG, CCS_SPDIF_INTEGRATED | CCS_SPDIF_INTERNAL_OUT | CCS_SPDIF_IN_PRESENT | CCS_SPDIF_EXTERNAL_OUT, card->iobase);
+        
+        dev->ioWrite8(CCS_SYSTEM_CONFIG, 0x4b, card->iobase);
+        dev->ioWrite8(CCS_ACLINK_CONFIG, CCS_ACLINK_I2S, card->iobase); // AC-link
+        dev->ioWrite8(CCS_I2S_FEATURES, CCS_I2S_96KHZ | CCS_I2S_24BIT | CCS_I2S_192KHZ | CCS_I2S_VOLMUTE, card->iobase); // I2S
+        dev->ioWrite8(CCS_SPDIF_CONFIG, 0xC3, card->iobase); // S/PDIF
+        
+        /*
+        unsigned char *ptr, reg, data;
+        
+        static unsigned char inits_ak4114[] = {
+            0x00, 0x00, // power down & reset
+            0x00, 0x0F, // power on
+            0x01, 0x70, // I2S
+            0x02, 0x80, // TX1 output enable
+            0x03, 0x49, // 1024 LRCK + transmit data
+            0x04, 0x00, // no mask
+            0x05, 0x00, // no mask
+            0x0D, 0x41, //
+            0x0E, 0x02,
+            0x0F, 0x2C,
+            0x10, 0x00,
+            0x11, 0x00,
+            0xff, 0xff
+        };
+        
+        ptr = inits_ak4358;
+        while (*ptr != 0xff) {
+            reg = *ptr++;
+            data = *ptr++;
+            WriteI2C(dev, card, AK4358_ADDR, reg, data);
+            MicroDelay(5);
+        }
+        
+        ptr = inits_ak4114;
+        while (*ptr != 0xff) {
+            reg = *ptr++;
+            data = *ptr++;
+            WriteI2C(dev, card, AK4114_ADDR, reg, data);
+            MicroDelay(100);
+        }*/
+        
+        //prodigy_hifi_init(card);
+
+        dev->ioWrite8(MT_SAMPLERATE, 8, card->mtbase);
+        ////dev->ioWrite32(0x2C, 0x300200, card->mtbase); // routes analogue in to analogue out
+        
+        CreateParmsForProdigyHiFi(card);
     }
     else if (card->SubType == PHASE22)
     {
@@ -1269,7 +1336,7 @@ int card_init(struct CardData *card)
 
     //dev->ioWrite32(0x2C, 0x000200, card->mtbase); // route
 
-    IOLog("Card init done!\n");
+    IOLog("Envy24HTAudioDriver::Card init done!\n");
 	//IOSleep(1000);
 
    return 0;
@@ -1316,6 +1383,61 @@ void MicroDelay(unsigned int micros)
   IODelay(micros);
 }
 
+static void CreateParmsForProdigyHiFi(struct CardData *card)
+{
+    Parm* p = new Parm;
+    Parm *prev = NULL;
+    card->ParmList = p;
+    
+    // left output
+    p->InitialValue = (WM_VOL_MAX - (DAC_MIN + 1)) / 2; //0x7F;
+    p->MinValue = DAC_MIN + 1;
+    p->MaxValue = WM_VOL_MAX;
+    p->MindB = (-48u << 16) + 32768;
+    p->MaxdB = (60 << 16) + 32768;
+    p->ChannelID = kIOAudioControlChannelIDDefaultLeft;
+    p->Name = kIOAudioControlChannelNameLeft;
+    p->ControlID = 0;
+    p->Usage = kIOAudioControlUsageOutput;
+    p->reg = WM_DAC_CTRL1;
+    p->reverse = false;
+    p->I2C = true;
+    p->I2C_codec_addr = WM_DEV;
+    p->hasControl = true;
+    p->HasMute = true;
+    p->MuteReg = WM_DAC_CTRL1;
+    p->MuteOnVal = 0;
+    p->MuteOffVal = DAC_MIN + 1;
+    p->codec = NULL;
+    
+    
+    // right output
+    prev = p;
+    p = new Parm;
+    prev->Next = p;
+    p->InitialValue = (WM_VOL_MAX - (DAC_MIN + 1)) / 2; //0x7F;
+    p->MinValue = DAC_MIN + 1;
+    p->MaxValue = WM_VOL_MAX;
+    p->MindB = (-48u << 16) + 32768;
+    p->MaxdB = (60 << 16) + 32768;;
+    p->ChannelID = kIOAudioControlChannelIDDefaultRight;
+    p->Name = kIOAudioControlChannelNameRight;
+    p->ControlID = 1;
+    p->Usage = kIOAudioControlUsageOutput;
+    p->reg = WM_DAC_CTRL2;
+    p->reverse = false;
+    p->I2C = true;
+    p->I2C_codec_addr = WM_DEV;
+    p->codec = NULL;
+    p->hasControl = true;
+    //p->HasMute = false;
+    p->HasMute = true;
+    p->MuteReg = WM_DAC_CTRL2;
+    p->MuteOnVal = 0;
+    p->MuteOffVal = DAC_MIN + 1;
+    
+    p->Next = NULL;
+}
 
 static void CreateParmsForJulia(struct CardData *card)
 {
@@ -1327,7 +1449,7 @@ static void CreateParmsForJulia(struct CardData *card)
     p->InitialValue = 0x7F;
     p->MinValue = 14;
     p->MaxValue = 0x7F;
-    p->MindB = (-49 << 16) + 32768;
+    p->MindB = (-49u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultLeft; 
     p->Name = kIOAudioControlChannelNameLeft;
@@ -1337,6 +1459,7 @@ static void CreateParmsForJulia(struct CardData *card)
     p->reverse = false;  
     p->I2C = true;
     p->I2C_codec_addr = AK4358_ADDR;
+    p->hasControl = true;
     p->HasMute = true;
     p->MuteReg =0x1;
     p->MuteOnVal = 0x3;
@@ -1351,7 +1474,7 @@ static void CreateParmsForJulia(struct CardData *card)
     p->InitialValue = 0x7F;
     p->MinValue = 14;
     p->MaxValue = 0x7F;
-    p->MindB = (-49 << 16) + 32768;
+    p->MindB = (-49u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultRight; 
     p->Name = kIOAudioControlChannelNameRight;
@@ -1362,6 +1485,7 @@ static void CreateParmsForJulia(struct CardData *card)
     p->I2C = true;
     p->I2C_codec_addr = AK4358_ADDR;
     p->codec = NULL;
+    p->hasControl = true;
     p->HasMute = false;
     p->Next = NULL;
 }    
@@ -1377,7 +1501,7 @@ static void CreateParmsForPhase22(struct CardData *card)
     p->InitialValue = 0x7E;
     p->MinValue = 14;
     p->MaxValue = 0x7E;
-    p->MindB = (-49 << 16) + 32768;
+    p->MindB = (-49u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultLeft; 
     p->Name = kIOAudioControlChannelNameLeft;
@@ -1387,6 +1511,7 @@ static void CreateParmsForPhase22(struct CardData *card)
     p->reverse = false;  
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = true;
     p->MuteReg =0x3;
     p->MuteOnVal = 0x99;
@@ -1401,7 +1526,7 @@ static void CreateParmsForPhase22(struct CardData *card)
     p->InitialValue = 0x7E;
     p->MinValue = 14;
     p->MaxValue = 0x7E;
-    p->MindB = (-49 << 16) + 32768;
+    p->MindB = (-49u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultRight; 
     p->Name = kIOAudioControlChannelNameRight;
@@ -1411,6 +1536,7 @@ static void CreateParmsForPhase22(struct CardData *card)
     p->reverse = false; 
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = false;
     p->codec = card->RevoFrontCodec;
     
@@ -1432,6 +1558,7 @@ static void CreateParmsForPhase22(struct CardData *card)
     p->reverse = false;  
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = false;
     p->codec = card->RevoFrontCodec;
     
@@ -1454,6 +1581,7 @@ static void CreateParmsForPhase22(struct CardData *card)
     p->I2C = false;
     p->I2C_codec_addr = 0;
     p->codec = card->RevoFrontCodec;
+    p->hasControl = true;
     p->HasMute = false;
     p->Next = NULL;
 }
@@ -1469,7 +1597,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->InitialValue = 0xFF;
     p->MinValue = 1;
     p->MaxValue = 0xFF;
-    p->MindB = (-48 << 16) + 32768;
+    p->MindB = (-48u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultLeft; 
     p->Name = kIOAudioControlChannelNameLeft;
@@ -1479,6 +1607,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->reverse = false;  
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = true;
     p->MuteReg =0x1;
     p->MuteOnVal = 0xB;
@@ -1493,7 +1622,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->InitialValue = 0xFF;
     p->MinValue = 1;
     p->MaxValue = 0xFF;
-    p->MindB = (-48 << 16) + 32768;
+    p->MindB = (-48u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultRight; 
     p->Name = kIOAudioControlChannelNameRight;
@@ -1503,6 +1632,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->reverse = false; 
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = false;
     p->codec = card->RevoFrontCodec;
     
@@ -1513,7 +1643,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->InitialValue = 0xFF;
     p->MinValue = 159;
     p->MaxValue = 0xFF;
-    p->MindB = (-48 << 16) + 32768;
+    p->MindB = (-48u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultLeft + 2; 
     p->Name = "Output 3";
@@ -1523,6 +1653,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->reverse = false;  
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = false;
     p->codec = card->RevoSurroundCodec;
     
@@ -1534,7 +1665,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->InitialValue = 0xFF;
     p->MinValue = 159;
     p->MaxValue = 0xFF;
-    p->MindB = (-48 << 16) + 32768;
+    p->MindB = (-48u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultRight + 2; 
     p->Name = "Output 4";
@@ -1544,6 +1675,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->reverse = false; 
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = false;
     p->codec = card->RevoSurroundCodec;
     
@@ -1554,7 +1686,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->InitialValue = 0xFF;
     p->MinValue = 159;
     p->MaxValue = 0xFF;
-    p->MindB = (-48 << 16) + 32768;
+    p->MindB = (-48u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultLeft + 4; 
     p->Name = "Output 5";
@@ -1564,6 +1696,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->reverse = false;  
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = false;
     p->codec = card->RevoSurroundCodec;
     
@@ -1575,7 +1708,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->InitialValue = 0xFF;
     p->MinValue = 159;
     p->MaxValue = 0xFF;
-    p->MindB = (-48 << 16) + 32768;
+    p->MindB = (-48u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultRight + 5; 
     p->Name = "Output 6";
@@ -1585,6 +1718,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->reverse = false; 
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = false;
     p->codec = card->RevoSurroundCodec;
     
@@ -1595,7 +1729,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->InitialValue = 0xFF;
     p->MinValue = 159;
     p->MaxValue = 0xFF;
-    p->MindB = (-48 << 16) + 32768;
+    p->MindB = (-48u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultLeft + 6; 
     p->Name = "Output 7";
@@ -1605,6 +1739,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->reverse = false;  
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = false;
     p->codec = card->RevoSurroundCodec;
     
@@ -1616,7 +1751,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->InitialValue = 0xFF;
     p->MinValue = 159;
     p->MaxValue = 0xFF;
-    p->MindB = (-48 << 16) + 32768;
+    p->MindB = (-48u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultRight + 7; 
     p->Name = "Output 8";
@@ -1626,6 +1761,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->reverse = false; 
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = false;
     p->codec = card->RevoSurroundCodec;
     
@@ -1643,7 +1779,7 @@ static void CreateParmsForRevo51(struct CardData *card)
     p->InitialValue = 0x7F;
     p->MinValue = 0x43; // -30 dB
     p->MaxValue = 0x7F; // 0 dB
-    p->MindB = (-30 << 16) + 32768;
+    p->MindB = (-30u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultLeft; 
     p->Name = kIOAudioControlChannelNameLeft;
@@ -1653,6 +1789,7 @@ static void CreateParmsForRevo51(struct CardData *card)
     p->reverse = false;  
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = true;
     p->MuteReg =0x1;
     p->MuteOnVal = 0x3;
@@ -1667,7 +1804,7 @@ static void CreateParmsForRevo51(struct CardData *card)
     p->InitialValue = 0x7F;
     p->MinValue = 0x43;
     p->MaxValue = 0x7F;
-    p->MindB = (-30 << 16) + 32768;
+    p->MindB = (-30u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultRight; 
     p->Name = kIOAudioControlChannelNameRight;
@@ -1677,6 +1814,7 @@ static void CreateParmsForRevo51(struct CardData *card)
     p->reverse = false; 
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = false;
     p->codec = card->RevoFrontCodec;
 
@@ -1687,7 +1825,7 @@ static void CreateParmsForRevo51(struct CardData *card)
     p->InitialValue = 0x7F;
     p->MinValue = 0x43;
     p->MaxValue = 0x7F;
-    p->MindB = (-30 << 16) + 32768;
+    p->MindB = (-30u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultLeft + 2; 
     p->Name = "Output 3";
@@ -1697,6 +1835,7 @@ static void CreateParmsForRevo51(struct CardData *card)
     p->reverse = false;  
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = false;
     p->codec = card->RevoFrontCodec;
     
@@ -1708,7 +1847,7 @@ static void CreateParmsForRevo51(struct CardData *card)
     p->InitialValue = 0x7F;
     p->MinValue = 0x43;
     p->MaxValue = 0x7F;
-    p->MindB = (-30 << 16) + 32768;
+    p->MindB = (-30u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultRight + 2; 
     p->Name = "Output 4";
@@ -1718,6 +1857,7 @@ static void CreateParmsForRevo51(struct CardData *card)
     p->reverse = false; 
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = false;
     p->codec = card->RevoFrontCodec;
     
@@ -1728,7 +1868,7 @@ static void CreateParmsForRevo51(struct CardData *card)
     p->InitialValue = 0x7F;
     p->MinValue = 0x43;
     p->MaxValue = 0x7F;
-    p->MindB = (-30 << 16) + 32768;
+    p->MindB = (-30u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultLeft + 4; 
     p->Name = "Output 5";
@@ -1738,6 +1878,7 @@ static void CreateParmsForRevo51(struct CardData *card)
     p->reverse = false;  
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = false;
     p->codec = card->RevoFrontCodec;
     
@@ -1749,7 +1890,7 @@ static void CreateParmsForRevo51(struct CardData *card)
     p->InitialValue = 0x7F;
     p->MinValue = 0x43;
     p->MaxValue = 0x7F;
-    p->MindB = (-30 << 16) + 32768;
+    p->MindB = (-30u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultRight + 4; 
     p->Name = "Output 6";
@@ -1760,6 +1901,7 @@ static void CreateParmsForRevo51(struct CardData *card)
     p->I2C = false;
     p->I2C_codec_addr = 0;
     p->codec = card->RevoFrontCodec;
+    p->hasControl = true;
     p->HasMute = false;
 
     // left input
@@ -1779,6 +1921,7 @@ static void CreateParmsForRevo51(struct CardData *card)
     p->reverse = false;  
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = false;
     p->codec = card->RevoRecCodec;
     
@@ -1801,6 +1944,7 @@ static void CreateParmsForRevo51(struct CardData *card)
     p->I2C = false;
     p->I2C_codec_addr = 0;
     p->codec = card->RevoRecCodec;
+    p->hasControl = true;
     p->HasMute = false;
     p->Next = NULL;
 }
@@ -1817,7 +1961,7 @@ static void CreateParmsForAP192(struct CardData *card)
     p->InitialValue = 0x7F;
     p->MinValue = 0;
     p->MaxValue = 0x7F;
-    p->MindB = (-64 << 16) + 32768;
+    p->MindB = (-64u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultLeft; 
     p->Name = kIOAudioControlChannelNameLeft;
@@ -1827,6 +1971,7 @@ static void CreateParmsForAP192(struct CardData *card)
     p->reverse = false;  
     p->I2C = false;
     p->I2C_codec_addr = AK4358_ADDR;
+    p->hasControl = true;
     p->HasMute = false;
     p->MuteReg =0x4;
     p->MuteOnVal = 0x80;
@@ -1841,7 +1986,7 @@ static void CreateParmsForAP192(struct CardData *card)
     p->InitialValue = 0x7F;
     p->MinValue = 0;
     p->MaxValue = 0x7F;
-    p->MindB = (-64 << 16) + 32768;
+    p->MindB = (-64u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultRight; 
     p->Name = kIOAudioControlChannelNameRight;
@@ -1852,6 +1997,7 @@ static void CreateParmsForAP192(struct CardData *card)
     p->I2C = false;
     p->I2C_codec_addr = AK4358_ADDR;
     p->codec = NULL;
+    p->hasControl = true;
     p->HasMute = false;
     p->Next = NULL;
 }    
@@ -1859,11 +2005,16 @@ static void CreateParmsForAP192(struct CardData *card)
 
 static void CreateParmsForAureonSpace(struct CardData *card)
 {
+    if (card->Specific.subvendorID == VT1724_SUBDEVICE_PRODIGY_HIFI){
+        IOLog("Envy24HTAudioDriver::Skipping volume parameters creation for Prodigy 7.1\n");
+        return;
+    }
+    
     Parm* p = new Parm;
     Parm *prev = NULL;
     card->ParmList = p;
     
-    IOLog("CreateParmsForAureonSpace\n");
+    IOLog("Envy24HTAudioDriver::CreateParmsForAureonSpace\n");
     
     // third output
     prev = p;
@@ -1872,7 +2023,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->InitialValue = 0xFF;
     p->MinValue = 0xB9;
     p->MaxValue = 0xFF;
-    p->MindB = (-35 << 16) + 32768;
+    p->MindB = (-35u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultLeft +2;
     p->Name =  "Output 3";
@@ -1882,6 +2033,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->reverse = false;
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = false;
     p->codec = NULL;
     
@@ -1893,7 +2045,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->InitialValue = 0xFF;
     p->MinValue = 0xB9;
     p->MaxValue = 0xFF;
-    p->MindB = (-35 << 16) + 32768;
+    p->MindB = (-35u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultRight +2;
     p->Name =  "Output 4";
@@ -1903,6 +2055,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->reverse = false;
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = false;
     p->codec = NULL;
     
@@ -1914,7 +2067,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->InitialValue = 0xFF;
     p->MinValue = 0xB9;
     p->MaxValue = 0xFF;
-    p->MindB = (-35 << 16) + 32768;
+    p->MindB = (-35u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultLeft +4;
     p->Name =  "Output 5";
@@ -1924,6 +2077,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->reverse = false;
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = false;
     p->codec = NULL;
     
@@ -1935,7 +2089,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->InitialValue = 0xFF;
     p->MinValue = 0xB9;
     p->MaxValue = 0xFF;
-    p->MindB = (-35 << 16) + 32768;
+    p->MindB = (-35u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultRight +4;
     p->Name =  "Output 6";
@@ -1945,6 +2099,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->reverse = false;
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = false;
     p->codec = NULL;
     
@@ -1956,7 +2111,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->InitialValue = 0xFF;
     p->MinValue = 0xB9;
     p->MaxValue = 0xFF;
-    p->MindB = (-35 << 16) + 32768;
+    p->MindB = (-35u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultLeft +6;
     p->Name =  "Output 7";
@@ -1966,6 +2121,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->reverse = false;
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = false;
     p->codec = NULL;
     
@@ -1977,7 +2133,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->InitialValue = 0xFF;
     p->MinValue = 0xB9;
     p->MaxValue = 0xFF;
-    p->MindB = (-35 << 16) + 32768;
+    p->MindB = (-35u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultRight +6;
     p->Name =  "Output 8";
@@ -1987,6 +2143,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->reverse = false;
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = false;
     p->codec = NULL;
     
@@ -1994,7 +2151,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->InitialValue = 0xFF;
     p->MinValue = 0xB9;
     p->MaxValue = 0xFF;
-    p->MindB = (-35 << 16) + 32768;
+    p->MindB = (-35u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultLeft; 
     p->Name = kIOAudioControlChannelNameLeft;
@@ -2004,6 +2161,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->reverse = false;  
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = true;
     p->MuteReg =0x14;
     p->MuteOnVal = 0x1;
@@ -2018,7 +2176,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->InitialValue = 0xFF;
     p->MinValue = 0xB9;
     p->MaxValue = 0xFF;
-    p->MindB = (-35 << 16) + 32768;
+    p->MindB = (-35u << 16) + 32768;
     p->MaxdB = 0;
     p->ChannelID = kIOAudioControlChannelIDDefaultRight; 
     p->Name = kIOAudioControlChannelNameRight;
@@ -2028,6 +2186,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->reverse = false; 
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = true;
     p->MuteReg =0x14;
     p->MuteOnVal = 0x1;
@@ -2042,7 +2201,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->InitialValue = 0xC;
     p->MinValue = 0;
     p->MaxValue = 0x1F;
-    p->MindB = (-12 << 16) + 32768;
+    p->MindB = (-12u << 16) + 32768;
     p->MaxdB = (19 << 16) + 32768;
     p->ChannelID = kIOAudioControlChannelIDDefaultLeft; 
     p->Name = kIOAudioControlChannelNameLeft;
@@ -2052,6 +2211,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->reverse = false;  
     p->I2C = false;
     p->I2C_codec_addr = 0;
+    p->hasControl = true;
     p->HasMute = false;
     p->codec = NULL;
     
@@ -2063,7 +2223,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->InitialValue = 0xC;
     p->MinValue = 0;
     p->MaxValue = 0x1F;
-    p->MindB = (-12 << 16) + 32768;
+    p->MindB = (-12u << 16) + 32768;
     p->MaxdB = (19 << 16) + 32768;
     p->ChannelID = kIOAudioControlChannelIDDefaultRight; 
     p->Name = kIOAudioControlChannelNameRight;
@@ -2074,6 +2234,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->I2C = false;
     p->I2C_codec_addr = 0;
     p->codec = NULL;
+    p->hasControl = true;
     p->HasMute = false;
     p->Next = NULL;
 }
@@ -2087,7 +2248,7 @@ int pci_alloc(struct memhandle *h)
     
     IOPhysicalAddress physical;
     h->addr=IOMallocContiguous((vm_size_t)h->size,PAGE_SIZE,&physical);
-    h->dma_handle = (dword)physical;
+    h->dma_handle = (UInt32)physical;
     
     if (!(h->addr) || !(h->dma_handle))
         return -1;
@@ -2107,8 +2268,8 @@ int pci_alloc(struct memhandle *h)
     
     h->desc->prepare();
     
-    h->addr =              h->desc->getBytesNoCopy    ();
-    h->dma_handle = (UInt32)h->desc->getPhysicalAddress();
+    h->addr = h->desc->getBytesNoCopy();
+    h->dma_handle = h->desc->getPhysicalAddress();
 #endif
     
 	IOLog("Envy24HTAudioDriver::DMA Buffer allocated successfully\n");

@@ -5,7 +5,7 @@
 #include <IOKit/audio/IOAudioDevice.h>
 #include <IOKit/IOLib.h>
 
-#define UWORD unsigned short
+#define UWORD UInt16
 #define ULONG UInt32
 #define BOOL bool
 #define APTR void *
@@ -33,7 +33,7 @@
 #define MPU401_READ()         dev->InByte(card->iobase + DATA_PORT )
 #define MPU401_WRITE(v)       dev->OutByte(card->iobase + DATA_PORT,v )
 
-enum Model {AUREON_SKY, AUREON_SPACE, PHASE28, REVO51, REVO71, JULIA, MAYA44, PHASE22, AP192, PRODIGY_HD2, CANTATIS};
+enum Model {AUREON_SKY, AUREON_SPACE, PHASE28, REVO51, REVO71, JULIA, MAYA44, PHASE22, AP192, PRODIGY_HD2, PRODIGY_HIFI, CANTATIS};
 extern UInt32 Dirs[];
 
 
@@ -58,6 +58,7 @@ struct Parm
     bool I2C;
     int I2C_codec_addr;
     struct akm_codec *codec;
+    bool hasControl;
     bool HasMute;
     unsigned char MuteReg;
     unsigned char MuteOnVal;
@@ -72,6 +73,8 @@ struct CardSpecific
 	UInt32 BufferSize;
 	UInt32 BufferSizeRec;
 	
+    UInt32 subvendorID;
+    
 	const char* name;
 	const char* producer;
 	
@@ -157,6 +160,8 @@ struct CardData
     struct akm_codec    *JuliaDAC;
     struct akm_codec    *JuliaRCV; // digital receiver
 	
+    //TODO: prodigy hifi codec cache here
+    
 	bool				 SPDIF_RateSupported;
 };
 

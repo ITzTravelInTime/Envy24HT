@@ -21,58 +21,6 @@
 //		audioStream - the audio stream this function is operating on
 IOReturn Envy24HTAudioEngine::clipOutputSamples(const void *mixBuf, void *sampleBuf, UInt32 firstSampleFrame, UInt32 numSampleFrames, const IOAudioStreamFormat *streamFormat, IOAudioStream *audioStream)
 {
-
-	/*
-    UInt32 sampleIndex, maxSampleIndex, spdifIndex;
-    float *floatMixBuf;
-	float inSample;
-    SInt32 *outputSInt32Buf = (SInt32 *)sampleBuf;
-    // Start by casting the void * mix and sample buffers to the appropriate types - float * for the mix buffer
-    // and SInt32 * for the sample buffer (because our sample hardware uses signed 32-bit samples)
-    floatMixBuf = (float *)mixBuf;
-
-    // We calculate the maximum sample index we are going to clip and convert
-    // This is an index into the entire sample and mix buffers
-    maxSampleIndex = (firstSampleFrame + numSampleFrames) * streamFormat->fNumChannels;
-    //IOLog("clip: firstFrame = %lu, numSampleFrames = %lu, channels = %lu, maxSampleIndex = %lu\n", firstSampleFrame, numSampleFrames, streamFormat->fNumChannels, maxSampleIndex);
-    
-    // Loop through the mix/sample buffers one sample at a time and perform the clip and conversion operations
-    for (sampleIndex = (firstSampleFrame * streamFormat->fNumChannels); sampleIndex < maxSampleIndex; sampleIndex++) {
-        // Fetch the floating point mix sample
-        inSample = floatMixBuf[sampleIndex];
-        
-        // Clip that sample to a range of -1.0 to 1.0
-        // A softer clipping operation could be done here
-        if (inSample > clipMax)
-		{
-            inSample = clipMax;
-        }
-		else if (inSample < clipMin)
-		{
-            inSample = clipMin;
-        }
-        
-        // Scale the -1.0 to 1.0 range to the appropriate scale for signed 32-bit samples and then
-        // convert to SInt32 and store in the hardware sample buffer
-		if (inSample >= 0)
-		{
-			outputSInt32Buf[sampleIndex] = (SInt32)correctEndian32((UInt32)  (inSample * INT_MAX) );
-		}
-		else
-		{
-			outputSInt32Buf[sampleIndex] = (SInt32)correctEndian32((UInt32)  (inSample * INT_MIN) );
-		}
-    }
-	
-	// Fill SPDIF buffer with first stereo pair mixed sound
-	UInt32 skip = (streamFormat->fNumChannels - 2) + 1;
-	spdifIndex = firstSampleFrame * 2;
-	for (sampleIndex = (firstSampleFrame * streamFormat->fNumChannels); sampleIndex < maxSampleIndex; sampleIndex+=skip)
-	{
-        outputBufferSPDIF[spdifIndex++] = outputSInt32Buf[sampleIndex++];
-		outputBufferSPDIF[spdifIndex++] = outputSInt32Buf[sampleIndex];
-    }
-	*/
 	
 	UInt32 startSampleIndex, maxSampleIndex;
     

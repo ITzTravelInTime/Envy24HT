@@ -7,6 +7,7 @@
 #include <IOKit/pci/IOPCIDevice.h>
 #include "regs.h"
 #include "misc.h"
+#include "prodigy_hifi.h"
 
 #define INITIAL_SAMPLE_RATE	44100
 
@@ -15,21 +16,21 @@
 
 static const UInt32 Frequencies[ FREQUENCIES ] =
 {
-    8000,
-    9600,
-    11025,
-    12000,
-    16000,
-    22050,
-    24000,
-	32000,
-    44100, // CD
-    48000,
-    64000,
-    88200,
-    96000,
-	176400,
-    192000
+    8000, //1
+    9600, //2
+    11025, //3
+    12000, //4
+    16000, //5
+    22050, //6
+    24000, //7
+	32000, //8
+    44100, //9
+    48000, //10
+    64000, //11
+    88200, //12
+    96000, //13
+	176400, //14
+    192000 //15
 };
 
 static const UInt32 FrequencyBits[ FREQUENCIES ] =
@@ -50,7 +51,6 @@ static const UInt32 FrequencyBits[ FREQUENCIES ] =
     12,
     14 // 176.4 KHz: only when CCS_SYSTEM_CONFIG:6 = 1 or (MT_I2S_FORMAT:MT_CLOCK_128x = 1 & CCS_SYSTEM_CONFIG:6 = 0)
 };
-
 
 #define SPDIF_FREQUENCIES 7
 
@@ -194,9 +194,9 @@ bool Envy24HTAudioEngine::initHardware(IOService *provider)
         goto Done;
     }
     
-    card->pci_dev->ioWrite32(MT_DMAI_PB_ADDRESS, outBuffer.dma_handle, card->mtbase);
-    card->pci_dev->ioWrite32(MT_RDMA0_ADDRESS, inBuffer.dma_handle, card->mtbase);
-    card->pci_dev->ioWrite32(MT_PDMA4_ADDRESS, outSPDFBuffer.dma_handle, card->mtbase); // SPDIF
+    card->pci_dev->ioWrite32(MT_DMAI_PB_ADDRESS, ((UInt32)outBuffer.dma_handle), card->mtbase);
+    card->pci_dev->ioWrite32(MT_RDMA0_ADDRESS, ((UInt32)inBuffer.dma_handle), card->mtbase);
+    card->pci_dev->ioWrite32(MT_PDMA4_ADDRESS, ((UInt32)outSPDFBuffer.dma_handle), card->mtbase); // SPDIF
     
 	card->pci_dev->ioWrite8(MT_SAMPLERATE, 8, card->mtbase); // initialize to 44100 Hz
 	card->pci_dev->ioWrite8(MT_DMAI_BURSTSIZE, (8 - card->Specific.NumChannels) / 2, card->mtbase);
@@ -213,7 +213,6 @@ bool Envy24HTAudioEngine::initHardware(IOService *provider)
 	addAudioStream(audioStream);
     audioStream->release();
 
-	
     //audioStream = createNewAudioStream(kIOAudioStreamDirectionInput, inputBuffer, card->Specific.BufferSizeRec, 1, 2);
     
     audioStream = createNewAudioStream(kIOAudioStreamDirectionInput, inBuffer.addr, card->Specific.BufferSizeRec, 1, 2);
@@ -295,63 +294,63 @@ IOAudioStream *Envy24HTAudioEngine::createNewAudioStream(IOAudioStreamDirection 
 														 UInt32 channels)
 {
     IOAudioStream *audioStream;
+    
+    IOAudioSampleRate rate;
+    IOAudioStreamFormat format = {
+        channels,                                        // num channels
+        kIOAudioStreamSampleFormatLinearPCM,            // sample format
+        kIOAudioStreamNumericRepresentationSignedInt,    // numeric format
+        24,                                                // bit depth
+        32,                                                // bit width
+        kIOAudioStreamAlignmentHighByte,                // high byte aligned - unused because bit depth == bit width
+        kIOAudioStreamByteOrderLittleEndian,                // little endian
+        true,                                            // format is mixable
+        channel                                            // number of channel
+    };
 	
     // For this sample device, we are only creating a single format and allowing 44.1KHz and 48KHz
     audioStream = new IOAudioStream;
 
-	if (audioStream) {
-        if (!audioStream->initWithAudioEngine(this, direction, 1)) {
-		    IOLog("initWithAudioEngine failed\n");
-			IOSleep(3000);
-            audioStream->release();
-        } else {
-            IOAudioSampleRate rate;
-            IOAudioStreamFormat format = {
-                channels,										// num channels
-                kIOAudioStreamSampleFormatLinearPCM,			// sample format
-                kIOAudioStreamNumericRepresentationSignedInt,	// numeric format
-                32,												// bit depth
-                32,												// bit width
-                kIOAudioStreamAlignmentHighByte,				// high byte aligned - unused because bit depth == bit width
-                kIOAudioStreamByteOrderBigEndian,    			// little endian
-                true,											// format is mixable
-                channel											// number of channel
-            };
-
-            // As part of creating a new IOAudioStream, its sample buffer needs to be set
-            // It will automatically create a mix buffer should it be needed
-            audioStream->setSampleBuffer(sampleBuffer, sampleBufferSize);
-			
-			// This device only allows a single format and a choice of 2 different sample rates
-            rate.fraction = 0;
-
-			//tested and doesn't work
-			//for (UInt8 f = 8; f <= 32; f += 8){
-			//	format.fBitDepth = f;
-				
-				for (int i = 0; i < FREQUENCIES; i++){
-					rate.whole = Frequencies[i];
-				
-					if ((rate.whole == 192000 && !card->Specific.supports192) || (rate.whole == 176400 && !card->Specific.supports176))
-						continue;
-					
-					DBGPRINT("	New samplig rate: Bits \"%u\" Sample Rate \"%u\"\n", (unsigned int)format.fBitDepth, (unsigned int)rate.whole);
-				
-					audioStream->addAvailableFormat(&format, &rate, &rate, NULL, 0);
-				}
-			//}
-
-						
-			// Finally, the IOAudioStream's current format needs to be indicated
-            audioStream->setFormat(&format, false);
-        }
+    if (!audioStream) {
+        IOLog("Envy24HTAudioDriver::Couldn't allocate IOAudioStream!!!\n");
+        IOSleep(3000);
+        return NULL;
     }
-	else
-	{
-		IOLog("Couldn't allocate IOAudioStream!!!\n");
-		IOSleep(3000);
+    
+    if (!audioStream->initWithAudioEngine(this, direction, 1)) {
+        IOLog("Envy24HTAudioDriver::audio stream initWithAudioEngine failed\n");
+        IOSleep(3000);
+        audioStream->release();
+        return NULL;
     }
-
+    
+    // As part of creating a new IOAudioStream, its sample buffer needs to be set
+    // It will automatically create a mix buffer should it be needed
+    audioStream->setSampleBuffer(sampleBuffer, sampleBufferSize);
+    
+    // This device only allows a single format and a choice of 2 different sample rates
+    rate.fraction = 0;
+    
+    //tested and doesn't work
+    //for (UInt8 f = 8; f <= 32; f += 8){
+    //	format.fBitDepth = f;
+    
+    for (int i = 0; i < FREQUENCIES; i++){
+        rate.whole = Frequencies[i];
+        
+        if ((rate.whole == 192000 && !card->Specific.supports192) || (rate.whole == 176400 && !card->Specific.supports176))
+            continue;
+        
+        IOLog("Envy24HTAudioDriver:: -- New samplig rate: Bits \"%u\" Sample Rate \"%u\"\n", (unsigned int)format.fBitDepth, (unsigned int)rate.whole);
+        
+        audioStream->addAvailableFormat(&format, &rate, &rate);
+    }
+    
+    //}
+    
+    // Finally, the IOAudioStream's current format needs to be indicated
+    audioStream->setFormat(&format);
+    
     return audioStream;
 }
 
@@ -383,7 +382,7 @@ void Envy24HTAudioEngine::stop(IOService *provider)
     
 IOReturn Envy24HTAudioEngine::performAudioEngineStart()
 {
-    //DBGPRINT("Envy24HTAudioEngine[%p]::performAudioEngineStart()\n", this);
+    DBGPRINT("Envy24HTAudioEngine[%p]::performAudioEngineStart()\n", this);
 	
     ClearMask8(card->pci_dev, card->mtbase, MT_DMA_CONTROL, MT_PDMA0_START | MT_PDMA4_START |
 			   MT_RDMA0_START | MT_RDMA1_START); // stop
@@ -422,7 +421,7 @@ IOReturn Envy24HTAudioEngine::performAudioEngineStart()
 	if (card->SPDIF_RateSupported && card->Specific.HasSPDIF)
     {
 		start |= MT_PDMA4_START;
-		IOLog("SPDIF started\n");
+		IOLog("Envy24HTAudioDriver::SPDIF started\n");
 		
 		card->pci_dev->ioWrite16(MT_PDMA4_LENGTH, BufferSize16, card->mtbase);
 		//card->pci_dev->ioWrite16(MT_PDMA4_INTLEN, BufferSize16, card->mtbase);
@@ -474,17 +473,17 @@ UInt32 Envy24HTAudioEngine::getCurrentSampleFrame()
 
     // Change to return the real value
 	const UInt32 div = card->Specific.NumChannels * (32 / 8);
-	UInt32 current_address = card->pci_dev->ioRead32(MT_DMAI_PB_ADDRESS, card->mtbase);
+	IOPhysicalAddress current_address = card->pci_dev->ioRead32(MT_DMAI_PB_ADDRESS, card->mtbase);
 	//UInt32 diff = (current_address - ((UInt32) physicalAddressOutput)) / div;
 
-    UInt32 diff = (current_address - outBuffer.dma_handle) / div;
+    IOPhysicalAddress diff = (current_address - outBuffer.dma_handle) / div;
     
-	return diff;
+	return (UInt32)diff;
 }
     
 IOReturn Envy24HTAudioEngine::performFormatChange(IOAudioStream *audioStream, const IOAudioStreamFormat *newFormat, const IOAudioSampleRate *newSampleRate)
 {
-    DBGPRINT("Envy24HTAudioEngine[%p]::peformFormatChange(%p, %p, %p)\n", this, audioStream, newFormat, newSampleRate);
+    IOLog("Envy24HTAudioEngine[%p]::peformFormatChange(%p, %p, %p)\n", this, audioStream, newFormat, newSampleRate);
     
 	if (newSampleRate)
 	{
@@ -501,8 +500,8 @@ IOReturn Envy24HTAudioEngine::performFormatChange(IOAudioStream *audioStream, co
 	{
 		currentSampleRate = 44100;
 	}
-	
-	UInt32 FreqBits = lookUpFrequencyBits(currentSampleRate, Frequencies, FrequencyBits, FREQUENCIES, 0x08);
+    
+    UInt32 FreqBits = lookUpFrequencyBits(currentSampleRate, Frequencies, FrequencyBits, FREQUENCIES, 0x08);
 	card->pci_dev->ioWrite8(MT_SAMPLERATE, FreqBits, card->mtbase);
 	//IOLog("Freq = %x\n", (unsigned int) FreqBits);
 
@@ -513,7 +512,7 @@ IOReturn Envy24HTAudioEngine::performFormatChange(IOAudioStream *audioStream, co
 	{
 		card->pci_dev->ioWrite16(MT_SPDIF_TRANSMIT, 0x04 | 1 << 5 | (SPDIFBits << 12), card->mtbase);
 		WriteMask8(card->pci_dev, card->iobase, CCS_SPDIF_CONFIG, CCS_SPDIF_INTEGRATED);
-		//IOLog("Enabled SPDIF %u\n", (unsigned int) SPDIFBits);
+		IOLog("Envy24HTAudioDriver::Enabled SPDIF %u\n", (unsigned int) SPDIFBits);
 	}
     
 	card->SPDIF_RateSupported = (SPDIFBits != 1000);
@@ -648,6 +647,7 @@ void Envy24HTAudioEngine::dumpRegisters()
 	// config
 	DBGPRINT("Vendor id = %x\n", card->pci_dev->configRead16(0));
 	DBGPRINT("Device id = %x\n", card->pci_dev->configRead16(2));
+    DBGPRINT("Subvendor id = %x\n", card->Specific.subvendorID);
 	DBGPRINT("PCI command id = %x\n", card->pci_dev->configRead16(4));
 	DBGPRINT("iobase = %x\n", card->pci_dev->configRead32(0x10));
 	DBGPRINT("mtbase = %x\n", card->pci_dev->configRead32(0x14));

@@ -30,15 +30,17 @@ bool Envy24HTAudioDevice::initHardware(IOService *provider)
 	card = new CardData;
 	if (!card)
 	{
-	  IOLog("Couldn't allocate memory for CardData!\n");
+	  IOLog("Envy24HTAudioDriver::Couldn't allocate memory for CardData!\n");
 	  IOSleep(3000);
 	  goto Done;
 	}
+    
+    card->Specific.subvendorID = 0;
 	
 	card->pci_dev = OSDynamicCast(IOPCIDevice, provider);
 	if (!card->pci_dev)
 	{
-	  IOLog("Couldn't get pci_dev!\n");
+	  IOLog("Envy24HTAudioDriver::Couldn't get pci_dev!\n");
 	  IOSleep(3000);
 	  goto Done;
 	}
@@ -58,7 +60,7 @@ bool Envy24HTAudioDevice::initHardware(IOService *provider)
     card->iobase = card->pci_dev->mapDeviceMemoryWithRegister(kIOPCIConfigBaseAddress0);
     if (!card->iobase) {
         goto Done;
-		}
+	}
 	
 	card->mtbase = card->pci_dev->mapDeviceMemoryWithRegister(kIOPCIConfigBaseAddress1);
     if (!card->mtbase) {
@@ -83,7 +85,7 @@ bool Envy24HTAudioDevice::initHardware(IOService *provider)
 Done:
 
     if (!result) {
-	    IOLog("Something failed!\n");
+	    IOLog("Envy24HTAudioDriver::Something failed while initializing the the Audio Device Object!!!\n");
 		IOSleep(3000);
         if (card && card->iobase) {
             card->iobase->release();
@@ -155,6 +157,7 @@ bool Envy24HTAudioDevice::createAudioEngine()
     
     while (p != NULL)
     {
+        if (p->hasControl){
         control = IOAudioLevelControl::createVolumeControl(p->InitialValue,     // Initial value
                                                            p->MinValue,         // min value
                                                            p->MaxValue,         // max value
@@ -165,20 +168,21 @@ bool Envy24HTAudioDevice::createAudioEngine()
                                                            p->ControlID,                // control ID - driver-defined,
                                                            p->Usage);
         if (!control) {
-            IOLog("Failed to create control!\n");
+            IOLog("Envy24HTAudioDriver::Failed to create volume control!\n");
             goto Done;
         }
         
         control->setValueChangeHandler((IOAudioControl::IntValueChangeHandler)volumeChangeHandler, this);
         audioEngine->addDefaultAudioControl(control);
         control->release();
+        }
         
         if (p->HasMute)
         {
             // Create an output mute control
             control = IOAudioToggleControl::createMuteControl(false,	// initial state - unmuted
-                                                              kIOAudioControlChannelIDAll,	// Affects all channels
-                                                              kIOAudioControlChannelNameAll,
+                                                              p->ChannelID,//kIOAudioControlChannelIDAll,	// Affects all channels
+                                                              p->Name,//kIOAudioControlChannelNameAll,
                                                               p->ControlID,		// control ID - driver-defined
                                                               kIOAudioControlUsageOutput);
             
@@ -196,10 +200,11 @@ bool Envy24HTAudioDevice::createAudioEngine()
     control = IOAudioToggleControl::createMuteControl(false,	// initial state - unmuted
                                                         kIOAudioControlChannelIDAll,	// Affects all channels
                                                         kIOAudioControlChannelNameAll,
-                                                        0,		// control ID - driver-defined
+                                                        10,		// control ID - driver-defined
                                                         kIOAudioControlUsageOutput);
                                 
     if (!control) {
+        IOLog("Envy24HTAudioDriver::Failed to create output mute control!!!\n");
         goto Done;
     }
         
@@ -216,10 +221,11 @@ bool Envy24HTAudioDevice::createAudioEngine()
     control = IOAudioToggleControl::createMuteControl(false,	// initial state - unmuted
                                                         kIOAudioControlChannelIDAll,	// Affects all channels
                                                         kIOAudioControlChannelNameAll,
-                                                        0,		// control ID - driver-defined
+                                                        11,		// control ID - driver-defined
                                                         kIOAudioControlUsageInput);
                                 
     if (!control) {
+        IOLog("Envy24HTAudioDriver::Failed to creare input mute control!!\n");
         goto Done;
     }
         
@@ -227,7 +233,6 @@ bool Envy24HTAudioDevice::createAudioEngine()
     audioEngine->addDefaultAudioControl(control);
     control->release();
 #endif
-
     // Active the audio engine - this will cause the audio engine to have start() and initHardware() called on it
     // After this function returns, that audio engine should be ready to begin vending audio services to the system
     activateAudioEngine(audioEngine);
@@ -262,7 +267,7 @@ IOReturn Envy24HTAudioDevice::volumeChangeHandler(IOService *target, IOAudioCont
 
 IOReturn Envy24HTAudioDevice::volumeChanged(IOAudioControl *volumeControl, SInt32 oldValue, SInt32 newValue)
 {
-    //IOLog("Envy24AudioDevice[%p]::volumeChanged(%p, %ld, %ld)\n", this, volumeControl, oldValue, newValue);
+    IOLog("Envy24AudioDevice[%p]::volumeChanged(%p, %x, %x)\n", this, volumeControl, oldValue, newValue);
     
     // Add hardware volume code change 
     if (oldValue != newValue) {

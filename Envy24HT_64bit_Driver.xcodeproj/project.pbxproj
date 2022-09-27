@@ -21,7 +21,6 @@
 		844C5ED21072B3C60064BE19 /* I2C.h in Headers */ = {isa = PBXBuildFile; fileRef = 85B86BF00E92C6BB00B18780 /* I2C.h */; };
 		844C5ED31072B3C60064BE19 /* regs.h in Headers */ = {isa = PBXBuildFile; fileRef = 85B86BF30E92C6C600B18780 /* regs.h */; };
 		844C5ED41072B3C60064BE19 /* Revo51.h in Headers */ = {isa = PBXBuildFile; fileRef = 8583CDA60EA7C8A500723E83 /* Revo51.h */; };
-		844C5ED51072B3C60064BE19 /* prodigy_hifi.h in Headers */ = {isa = PBXBuildFile; fileRef = 85CD524C0EE49B66005C51C3 /* prodigy_hifi.h */; };
 		844C5ED71072B3C60064BE19 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
 		844C5ED91072B3C60064BE19 /* AudioDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A224C3FFF42367911CA2CB7 /* AudioDevice.cpp */; settings = {ATTRIBUTES = (); }; };
 		844C5EDA1072B3C60064BE19 /* AudioEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0117744F00710DAB7F000001 /* AudioEngine.cpp */; };
@@ -64,6 +63,13 @@
 		DD12382728C795F600D3EF66 /* misc.h in Headers */ = {isa = PBXBuildFile; fileRef = DD12382628C795F600D3EF66 /* misc.h */; };
 		DD12382928C7962200D3EF66 /* DriverData.h in Headers */ = {isa = PBXBuildFile; fileRef = DD12382828C7962200D3EF66 /* DriverData.h */; };
 		DD42D00428C7AC260099E8AA /* liblibAudioFloatLib_64bit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DD12382128C792C000D3EF66 /* liblibAudioFloatLib_64bit.a */; settings = {ATTRIBUTES = (Required, ); }; };
+		DD47580F28D74FD500687A7F /* Envy24HTAudioDriver_64Bit.plist in Resources */ = {isa = PBXBuildFile; fileRef = DD47580E28D74FD500687A7F /* Envy24HTAudioDriver_64Bit.plist */; };
+		DD47581028D78E4200687A7F /* prodigy_hifi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DDE7F66028C7CE2D00BBEBD6 /* prodigy_hifi.cpp */; };
+		DD47581128D78E4800687A7F /* prodigy_hifi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DDE7F66028C7CE2D00BBEBD6 /* prodigy_hifi.cpp */; };
+		DD47581228D78E4E00687A7F /* DriverData.h in Headers */ = {isa = PBXBuildFile; fileRef = DD12382828C7962200D3EF66 /* DriverData.h */; };
+		DD47581328D78E4F00687A7F /* DriverData.h in Headers */ = {isa = PBXBuildFile; fileRef = DD12382828C7962200D3EF66 /* DriverData.h */; };
+		DD47581428D78E5D00687A7F /* misc.h in Headers */ = {isa = PBXBuildFile; fileRef = DD12382628C795F600D3EF66 /* misc.h */; };
+		DD47581528D78E5F00687A7F /* misc.h in Headers */ = {isa = PBXBuildFile; fileRef = DD12382628C795F600D3EF66 /* misc.h */; };
 		DDC3B7F8275967230088AD28 /* SampleConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = DDC3B7F7275967230088AD28 /* SampleConvert.h */; };
 		DDC3B7F9275967230088AD28 /* SampleConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = DDC3B7F7275967230088AD28 /* SampleConvert.h */; };
 		DDE7F65F28C7CE2700BBEBD6 /* prodigy_hifi.h in Headers */ = {isa = PBXBuildFile; fileRef = DDE7F65E28C7CE2700BBEBD6 /* prodigy_hifi.h */; };
@@ -181,11 +187,12 @@
 		85B86BF30E92C6C600B18780 /* regs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = regs.h; sourceTree = "<group>"; };
 		85CD524C0EE49B66005C51C3 /* prodigy_hifi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prodigy_hifi.h; sourceTree = "<group>"; };
 		DD12381428C792BE00D3EF66 /* Envy24HTAudioDriver_64bit.kext */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Envy24HTAudioDriver_64bit.kext; sourceTree = BUILT_PRODUCTS_DIR; };
-		DD12381528C792BE00D3EF66 /* Envy24HTAudioDriver_64Bit.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Envy24HTAudioDriver_64Bit.plist; path = "/Volumes/usb/kexts_source/Envy24HT-master/Envy24HTAudioDriver_64Bit.plist"; sourceTree = "<absolute>"; };
 		DD12382128C792C000D3EF66 /* liblibAudioFloatLib_64bit.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblibAudioFloatLib_64bit.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD12382628C795F600D3EF66 /* misc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = misc.h; sourceTree = "<group>"; };
 		DD12382828C7962200D3EF66 /* DriverData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DriverData.h; sourceTree = "<group>"; };
+		DD47580E28D74FD500687A7F /* Envy24HTAudioDriver_64Bit.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Envy24HTAudioDriver_64Bit.plist; sourceTree = "<group>"; };
 		DDC3B7F7275967230088AD28 /* SampleConvert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampleConvert.h; sourceTree = "<group>"; };
+		DDD2302628E29B1F00801153 /* install64.command */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = install64.command; sourceTree = "<group>"; };
 		DDE7F65E28C7CE2700BBEBD6 /* prodigy_hifi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prodigy_hifi.h; sourceTree = "<group>"; };
 		DDE7F66028C7CE2D00BBEBD6 /* prodigy_hifi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = prodigy_hifi.cpp; sourceTree = "<group>"; };
 		FCE7239808C89FB200026E23 /* install.command */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = install.command; sourceTree = "<group>"; };
@@ -250,7 +257,7 @@
 				847F3C3A107155BF00F6BFF6 /* Info-Envy24HTAudioDriver__Upgraded_.plist */,
 				847F3CC7107156D200F6BFF6 /* Info-Envy24HTAudioDriver__Upgraded__2.plist */,
 				844C5EE91072B3C60064BE19 /* Info-Envy24HTAudioDriver__Upgraded__2-1.plist */,
-				DD12381528C792BE00D3EF66 /* Envy24HTAudioDriver_64Bit.plist */,
+				DD47580E28D74FD500687A7F /* Envy24HTAudioDriver_64Bit.plist */,
 				DD12382228C7937C00D3EF66 /* Frameworks */,
 				DD398CD428C7ED0200FD9DA2 /* Recovered References */,
 			);
@@ -296,6 +303,7 @@
 				85B86BEA0E92C6B000B18780 /* ak_codec.cpp */,
 				85B86BEB0E92C6B000B18780 /* ak_codec.h */,
 				FCE7239808C89FB200026E23 /* install.command */,
+				DDD2302628E29B1F00801153 /* install64.command */,
 				1A224C3EFF42367911CA2CB7 /* AudioDevice.h */,
 				1A224C3FFF42367911CA2CB7 /* AudioDevice.cpp */,
 				0117744E00710DAB7F000001 /* AudioEngine.h */,
@@ -336,6 +344,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DD47581428D78E5D00687A7F /* misc.h in Headers */,
+				DD47581228D78E4E00687A7F /* DriverData.h in Headers */,
 				1A224C40FF42367911CA2CB7 /* AudioDevice.h in Headers */,
 				0117745000710DAB7F000001 /* AudioEngine.h in Headers */,
 				85B86BEC0E92C6B000B18780 /* ak4114.h in Headers */,
@@ -361,7 +371,6 @@
 				844C5ED31072B3C60064BE19 /* regs.h in Headers */,
 				DDE7F65F28C7CE2700BBEBD6 /* prodigy_hifi.h in Headers */,
 				844C5ED41072B3C60064BE19 /* Revo51.h in Headers */,
-				844C5ED51072B3C60064BE19 /* prodigy_hifi.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -377,6 +386,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DD47581528D78E5F00687A7F /* misc.h in Headers */,
+				DD47581328D78E4F00687A7F /* DriverData.h in Headers */,
 				DD1237F828C792BE00D3EF66 /* AudioDevice.h in Headers */,
 				DD1237F928C792BE00D3EF66 /* AudioEngine.h in Headers */,
 				DD1237FB28C792BE00D3EF66 /* ak4114.h in Headers */,
@@ -507,7 +518,7 @@
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1010;
+				LastUpgradeCheck = 1320;
 			};
 			buildConfigurationList = FCC4E42908B955B400AC9D19 /* Build configuration list for PBXProject "Envy24HT_64bit_Driver" */;
 			compatibilityVersion = "Xcode 3.1";
@@ -545,6 +556,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				844C5ED71072B3C60064BE19 /* InfoPlist.strings in Resources */,
+				DD47580F28D74FD500687A7F /* Envy24HTAudioDriver_64Bit.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -656,7 +668,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "script=\"${SYSTEM_DEVELOPER_DIR}/ProjectBuilder Extras/Kernel Extension Support/KEXTPostprocess\";\nif [ -x \"$script\" ]; then\n    . \"$script\"\nfi\nfind \"${BUILT_PRODUCTS_DIR}/Envy24HTPCIAudioDriver.kext\" -type d -exec /bin/chmod 0755 {} \\;\nfind \"${BUILT_PRODUCTS_DIR}/Envy24HTPCIAudioDriver.kext\" -type f -exec /bin/chmod 0644 {} \\;\ncp ${SRCROOT}/install.command ${BUILT_PRODUCTS_DIR}";
+			shellScript = "script=\"${SYSTEM_DEVELOPER_DIR}/ProjectBuilder Extras/Kernel Extension Support/KEXTPostprocess\";\nif [ -x \"$script\" ]; then\n    . \"$script\"\nfi\nfind \"${BUILT_PRODUCTS_DIR}/Envy24HTPCIAudioDriver.kext\" -type d -exec /bin/chmod 0755 {} \\;\nfind \"${BUILT_PRODUCTS_DIR}/Envy24HTPCIAudioDriver.kext\" -type f -exec /bin/chmod 0644 {} \\;\ncp ${SRCROOT}/install64.command ${BUILT_PRODUCTS_DIR}\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -679,6 +691,7 @@
 				85B86BF10E92C6BB00B18780 /* I2C.cpp in Sources */,
 				850BB10D0E92D04E00BD103D /* misc.cpp in Sources */,
 				8583CDA70EA7C8A500723E83 /* Revo51.cpp in Sources */,
+				DD47581128D78E4800687A7F /* prodigy_hifi.cpp in Sources */,
 				85B4FB0E0EE1597C00D1AF56 /* audiophile192.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -716,6 +729,7 @@
 				DD12380728C792BE00D3EF66 /* I2C.cpp in Sources */,
 				DD12380828C792BE00D3EF66 /* misc.cpp in Sources */,
 				DD12380928C792BE00D3EF66 /* Revo51.cpp in Sources */,
+				DD47581028D78E4200687A7F /* prodigy_hifi.cpp in Sources */,
 				DD12380A28C792BE00D3EF66 /* audiophile192.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -762,6 +776,7 @@
 					ppc,
 					i386,
 				);
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -790,6 +805,7 @@
 				PUBLIC_HEADERS_FOLDER_PATH = "$(KEXT_FRAMEWORK)/Contents/Headers/$(KEXT_FAMILY_NAME)";
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.4u.sdk";
 				SECTORDER_FLAGS = "";
+				STRIP_STYLE = debugging;
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
@@ -807,6 +823,7 @@
 					ppc,
 					i386,
 				);
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -833,6 +850,7 @@
 				PUBLIC_HEADERS_FOLDER_PATH = "$(KEXT_FRAMEWORK)/Contents/Headers/$(KEXT_FAMILY_NAME)";
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.4u.sdk";
 				SECTORDER_FLAGS = "";
+				STRIP_STYLE = debugging;
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
@@ -850,6 +868,7 @@
 					ppc,
 					i386,
 				);
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -876,6 +895,7 @@
 				PUBLIC_HEADERS_FOLDER_PATH = "$(KEXT_FRAMEWORK)/Contents/Headers/$(KEXT_FAMILY_NAME)";
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.4u.sdk";
 				SECTORDER_FLAGS = "";
+				STRIP_STYLE = debugging;
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
@@ -893,6 +913,7 @@
 					ppc,
 					i386,
 				);
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = NO;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -950,6 +971,7 @@
 					ppc,
 					i386,
 				);
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -1006,6 +1028,7 @@
 					ppc,
 					i386,
 				);
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
@@ -1056,6 +1079,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_ANALYZER_DEADCODE_DEADSTORES = NO;
+				CLANG_ANALYZER_DIVIDE_BY_ZERO = NO;
+				CLANG_ANALYZER_NULL_DEREFERENCE = NO;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1065,7 +1092,6 @@
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = Envy24HTAudioDriver_64Bit.plist;
-				INSTALL_PATH = "$(SYSTEM_LIBRARY_DIR)/Extensions";
 				KERNEL_MODULE = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1080,14 +1106,18 @@
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
 				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "${MODULE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = "$(KEXT_FRAMEWORK)/Contents/Headers/$(KEXT_FAMILY_NAME)";
+				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
+				VALID_ARCHS = "ppc i386 x86_64 arm64e";
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
+					"-Wno-quoted-include-in-framework-header",
 				);
 				WRAPPER_EXTENSION = kext;
 				ZERO_LINK = NO;
@@ -1098,6 +1128,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -1105,7 +1136,6 @@
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = Envy24HTAudioDriver_64Bit.plist;
-				INSTALL_PATH = "$(SYSTEM_LIBRARY_DIR)/Extensions";
 				KERNEL_MODULE = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1120,14 +1150,17 @@
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
 				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "${MODULE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = "$(KEXT_FRAMEWORK)/Contents/Headers/$(KEXT_FAMILY_NAME)";
 				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
+				VALID_ARCHS = "ppc i386 x86_64 arm64e";
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
+					"-Wno-quoted-include-in-framework-header",
 				);
 				WRAPPER_EXTENSION = kext;
 				ZERO_LINK = NO;
@@ -1138,6 +1171,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -1145,7 +1179,6 @@
 				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = Envy24HTAudioDriver_64Bit.plist;
-				INSTALL_PATH = "$(SYSTEM_LIBRARY_DIR)/Extensions";
 				KERNEL_MODULE = YES;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1160,14 +1193,17 @@
 				OTHER_LDFLAGS = "";
 				OTHER_REZFLAGS = "";
 				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "${MODULE_NAME}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = "$(KEXT_FRAMEWORK)/Contents/Headers/$(KEXT_FAMILY_NAME)";
 				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
+				VALID_ARCHS = "ppc i386 x86_64 arm64e";
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
+					"-Wno-quoted-include-in-framework-header",
 				);
 				WRAPPER_EXTENSION = kext;
 				ZERO_LINK = NO;
@@ -1178,6 +1214,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = NO;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -1218,10 +1255,12 @@
 				REZ_EXECUTABLE = YES;
 				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
+				VALID_ARCHS = "ppc i386 x86_64 arm64e arm64";
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
+					"-Wno-quoted-include-in-framework-header",
 				);
 				ZERO_LINK = YES;
 			};
@@ -1231,6 +1270,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -1270,10 +1310,12 @@
 				REZ_EXECUTABLE = YES;
 				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
+				VALID_ARCHS = "ppc i386 x86_64 arm64e arm64";
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
+					"-Wno-quoted-include-in-framework-header",
 				);
 				ZERO_LINK = NO;
 			};
@@ -1283,6 +1325,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
@@ -1320,10 +1363,12 @@
 				REZ_EXECUTABLE = YES;
 				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
+				VALID_ARCHS = "ppc i386 x86_64 arm64e arm64";
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
 					"-Wno-unknown-pragmas",
+					"-Wno-quoted-include-in-framework-header",
 				);
 			};
 			name = Default;
@@ -1331,6 +1376,7 @@
 		FCC4E42208B955B400AC9D19 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = NO;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -1379,6 +1425,7 @@
 		FCC4E42308B955B400AC9D19 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -1425,6 +1472,7 @@
 		FCC4E42408B955B400AC9D19 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				GCC_OPTIMIZATION_LEVEL = 2;
@@ -1469,6 +1517,7 @@
 		FCC4E42608B955B400AC9D19 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1499,6 +1548,7 @@
 		FCC4E42708B955B400AC9D19 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COPY_PHASE_STRIP = YES;
 				FRAMEWORK_SEARCH_PATHS = "";
 				HEADER_SEARCH_PATHS = "";
@@ -1526,6 +1576,7 @@
 		FCC4E42808B955B400AC9D19 /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				FRAMEWORK_SEARCH_PATHS = "";
 				HEADER_SEARCH_PATHS = "";
 				INSTALL_PATH = "$(SYSTEM_LIBRARY_DIR)/Extensions";
@@ -1565,12 +1616,14 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_DEBUGGING_SYMBOLS = default;
 				GCC_MODEL_TUNING = "";
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -1609,6 +1662,7 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -1653,6 +1707,7 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;

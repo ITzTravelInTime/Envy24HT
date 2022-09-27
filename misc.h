@@ -65,7 +65,7 @@ struct memhandle
     // note: this is for 32-bit OS only
     size_t size;
     void * addr;          // virtual
-    UInt32 dma_handle;    // physical
+    IOPhysicalAddress dma_handle; // physical
     
 #if !defined(OLD_ALLOC)
     IOBufferMemoryDescriptor *desc;

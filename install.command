@@ -19,6 +19,8 @@ M-Audio Revolution 5.1
 M-Audio Revolution 7.1
 M-Audio Audiophile 192
 ESI Juli@
+ESI MAYA44
+ESI Prodigy 7.1 Hi-Fi
 ESI Prodigy Hi-Fi
 Audiotrack Prodigy 7.1
 Audiotrack Prodigy HD2

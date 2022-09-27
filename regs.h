@@ -37,6 +37,10 @@
     #define CCS_CONFIG_DAC_MASK     0x03 // 00: 1 stereo adc, 01: 2, 10: 3, 11: 4
     #define CCS_CONFIG_DAC_SHIFT    0
 
+//#define   VT1724_CFG_CLOCK    0xc0
+//#define     VT1724_CFG_CLOCK512  0x00    /* 22.5692Mhz, 44.1kHz*512 */
+//#define     VT1724_CFG_CLOCK384  0x40    /* 16.9344Mhz, 44.1kHz*384 */
+
 #define CCS_ACLINK_CONFIG       0x0005
     #define CCS_ACLINK_I2S          0x80 // 0: AC97, 1:I2S
     #define CCS_ACLINK_MODE         0x02 // 0: split mode, 1: packed mode
