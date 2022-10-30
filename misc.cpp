@@ -1404,12 +1404,14 @@ static void CreateParmsForProdigyHiFi(struct CardData *card)
     p->I2C = true;
     p->I2C_codec_addr = WM_DEV;
     p->hasControl = true;
+	p->usesUnmuteVolumeReset = true;
     p->HasMute = true;
     p->MuteReg = WM_DAC_CTRL1;
     p->MuteOnVal = 0;
     p->MuteOffVal = DAC_MIN + 1;
     p->codec = NULL;
     
+	//WM_MASTER_CTRL
     
     // right output
     prev = p;
@@ -1430,12 +1432,13 @@ static void CreateParmsForProdigyHiFi(struct CardData *card)
     p->I2C_codec_addr = WM_DEV;
     p->codec = NULL;
     p->hasControl = true;
+	p->usesUnmuteVolumeReset = true;
     //p->HasMute = false;
     p->HasMute = true;
     p->MuteReg = WM_DAC_CTRL2;
     p->MuteOnVal = 0;
     p->MuteOffVal = DAC_MIN + 1;
-    
+	
     p->Next = NULL;
 }
 
@@ -1460,6 +1463,7 @@ static void CreateParmsForJulia(struct CardData *card)
     p->I2C = true;
     p->I2C_codec_addr = AK4358_ADDR;
     p->hasControl = true;
+	p->usesUnmuteVolumeReset = false;
     p->HasMute = true;
     p->MuteReg =0x1;
     p->MuteOnVal = 0x3;
@@ -1487,6 +1491,7 @@ static void CreateParmsForJulia(struct CardData *card)
     p->codec = NULL;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->Next = NULL;
 }    
 
@@ -1513,6 +1518,7 @@ static void CreateParmsForPhase22(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = true;
+	p->usesUnmuteVolumeReset = false;
     p->MuteReg =0x3;
     p->MuteOnVal = 0x99;
     p->MuteOffVal = 0x19;
@@ -1538,6 +1544,7 @@ static void CreateParmsForPhase22(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->codec = card->RevoFrontCodec;
     
     
@@ -1560,6 +1567,7 @@ static void CreateParmsForPhase22(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->codec = card->RevoFrontCodec;
     
     
@@ -1583,6 +1591,7 @@ static void CreateParmsForPhase22(struct CardData *card)
     p->codec = card->RevoFrontCodec;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->Next = NULL;
 }
 
@@ -1609,6 +1618,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = true;
+	p->usesUnmuteVolumeReset = false;
     p->MuteReg =0x1;
     p->MuteOnVal = 0xB;
     p->MuteOffVal = 0xA;
@@ -1634,6 +1644,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->codec = card->RevoFrontCodec;
     
     // third output
@@ -1655,6 +1666,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->codec = card->RevoSurroundCodec;
     
     
@@ -1677,6 +1689,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->codec = card->RevoSurroundCodec;
     
     // fifth output
@@ -1698,6 +1711,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->codec = card->RevoSurroundCodec;
     
     
@@ -1720,6 +1734,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->codec = card->RevoSurroundCodec;
     
     // seventh output
@@ -1741,6 +1756,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->codec = card->RevoSurroundCodec;
     
     
@@ -1763,6 +1779,7 @@ static void CreateParmsForRevo71(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->codec = card->RevoSurroundCodec;
     
     p->Next = NULL;
@@ -1791,6 +1808,7 @@ static void CreateParmsForRevo51(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = true;
+	p->usesUnmuteVolumeReset = false;
     p->MuteReg =0x1;
     p->MuteOnVal = 0x3;
     p->MuteOffVal = 0x1;
@@ -1816,6 +1834,7 @@ static void CreateParmsForRevo51(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->codec = card->RevoFrontCodec;
 
     // third output
@@ -1837,6 +1856,7 @@ static void CreateParmsForRevo51(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->codec = card->RevoFrontCodec;
     
     
@@ -1859,6 +1879,7 @@ static void CreateParmsForRevo51(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->codec = card->RevoFrontCodec;
     
     // fifth output
@@ -1880,6 +1901,7 @@ static void CreateParmsForRevo51(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->codec = card->RevoFrontCodec;
     
     
@@ -1903,6 +1925,7 @@ static void CreateParmsForRevo51(struct CardData *card)
     p->codec = card->RevoFrontCodec;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
 
     // left input
     prev = p;
@@ -1923,6 +1946,7 @@ static void CreateParmsForRevo51(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->codec = card->RevoRecCodec;
     
     
@@ -1946,6 +1970,7 @@ static void CreateParmsForRevo51(struct CardData *card)
     p->codec = card->RevoRecCodec;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->Next = NULL;
 }
 
@@ -1973,6 +1998,7 @@ static void CreateParmsForAP192(struct CardData *card)
     p->I2C_codec_addr = AK4358_ADDR;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->MuteReg =0x4;
     p->MuteOnVal = 0x80;
     p->MuteOffVal = 0x0;
@@ -1999,6 +2025,7 @@ static void CreateParmsForAP192(struct CardData *card)
     p->codec = NULL;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->Next = NULL;
 }    
 
@@ -2035,6 +2062,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->codec = NULL;
     
     
@@ -2057,6 +2085,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->codec = NULL;
     
     
@@ -2079,6 +2108,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->codec = NULL;
     
     
@@ -2101,6 +2131,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->codec = NULL;
     
     
@@ -2123,6 +2154,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->codec = NULL;
     
     
@@ -2145,6 +2177,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->codec = NULL;
     
     // left output
@@ -2163,6 +2196,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = true;
+	p->usesUnmuteVolumeReset = false;
     p->MuteReg =0x14;
     p->MuteOnVal = 0x1;
     p->MuteOffVal = 0x0;
@@ -2188,6 +2222,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = true;
+	p->usesUnmuteVolumeReset = false;
     p->MuteReg =0x14;
     p->MuteOnVal = 0x1;
     p->MuteOffVal = 0x0;
@@ -2213,6 +2248,7 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->I2C_codec_addr = 0;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->codec = NULL;
     
     
@@ -2236,59 +2272,6 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->codec = NULL;
     p->hasControl = true;
     p->HasMute = false;
+	p->usesUnmuteVolumeReset = false;
     p->Next = NULL;
-}
-
-int pci_alloc(struct memhandle *h)
-{
-    
-#if defined(OLD_ALLOC)
-    
-#warning "Using old dma memory allocation method"
-    
-    IOPhysicalAddress physical;
-    h->addr=IOMallocContiguous((vm_size_t)h->size,PAGE_SIZE,&physical);
-    h->dma_handle = (UInt32)physical;
-    
-    if (!(h->addr) || !(h->dma_handle))
-        return -1;
-#else
-    
-    //h->addr=IOMallocContiguous(h->size,PAGE_SIZE,&phys_addr);
-    mach_vm_address_t mask = allocation_mask; //0x000000007FFFFFFFULL & ~(PAGE_SIZE - 1);
-    
-    h->desc = IOBufferMemoryDescriptor::inTaskWithPhysicalMask(
-                                                               kernel_task,
-                                                               kIODirectionInOut | kIOMemoryPhysicallyContiguous,
-                                                               h->size,
-                                                               mask);
-    
-    if (!h->desc)
-        return -1;
-    
-    h->desc->prepare();
-    
-    h->addr = h->desc->getBytesNoCopy();
-    h->dma_handle = h->desc->getPhysicalAddress();
-#endif
-    
-	IOLog("Envy24HTAudioDriver::DMA Buffer allocated successfully\n");
-	
-    //buffer cleaning
-    bzero((unsigned char*)h->addr, h->size);
-    
-    return 0;
-}
-
-void pci_free(struct memhandle *h)
-{
-    const size_t size = h->size;
-#if defined(OLD_ALLOC)
-    #warning "Using old dma memory allocation method"
-    IOFreeContiguous(h->addr,h->size);
-#else
-    h->desc->release();
-#endif
-    memset(h, 0, sizeof(*h));
-    h->size = size;
 }

@@ -22,11 +22,10 @@
 IOReturn Envy24HTAudioEngine::clipOutputSamples(const void *mixBuf, void *sampleBuf, UInt32 firstSampleFrame, UInt32 numSampleFrames, const IOAudioStreamFormat *streamFormat, IOAudioStream *audioStream)
 {
 	
-	UInt32 startSampleIndex, maxSampleIndex;
+	const UInt32 startSampleIndex = (firstSampleFrame * streamFormat->fNumChannels), maxSampleIndex = (firstSampleFrame + numSampleFrames) * streamFormat->fNumChannels;
     
-    maxSampleIndex = (firstSampleFrame + numSampleFrames) * streamFormat->fNumChannels;
-    startSampleIndex = (firstSampleFrame * streamFormat->fNumChannels);
-    
+	//IOLog("Envy24HTAudioDriver::Clip Out samples %lx %lx\n", (uintptr_t)mixBuf, (uintptr_t)sampleBuf);
+	
     Float32ToSInt32_optimized( (const float *)mixBuf, (SInt32 *)sampleBuf, maxSampleIndex, startSampleIndex);
     
     return kIOReturnSuccess;

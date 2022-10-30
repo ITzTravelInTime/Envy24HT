@@ -281,6 +281,11 @@ IOReturn Envy24HTAudioDevice::volumeChanged(IOAudioControl *volumeControl, SInt3
                 //val = val | (val << 8);
                 
                 //IOLog("write reg %d, val %d\n", p->reg, val);
+				
+				if (p->HasMute && p->usesUnmuteVolumeReset){
+					p->MuteOffVal = val;
+				}
+				
                 if (p->I2C)
                 {
                     WriteI2C(card->pci_dev, card, p->I2C_codec_addr, p->reg, val | 0x80);

@@ -14,8 +14,8 @@
 
 #include <IOKit/IOLib.h>
 //#include <TargetConditionals.h>
-#include <libkern/OSTypes.h>
-#include <libkern/OSByteOrder.h>
+//#include <libkern/OSTypes.h>
+//#include <libkern/OSByteOrder.h>
 
 inline static UInt32 correctEndianess32(const UInt32 number){
     return OSSwapHostToLittleInt32(number);
@@ -129,13 +129,17 @@ static inline double clamp(const double val){
 
 
 static void Float32ToSInt32_portable( const float* floatMixBuf, SInt32* destBuf, const size_t end, const size_t start){
-    register float inSample;
+    register double inSample;
     register size_t sampleIndex = start, sampleDestinationMemoryIndex = (start * sizeof(*destBuf));
     
     // Loop through the mix/sample buffers one sample at a time and perform the clip and conversion operations
     for (; sampleIndex < end; sampleIndex++, sampleDestinationMemoryIndex += sizeof(*destBuf)){
         // Fetch the floating point mix sample
-        inSample = (clamp((const double)floatMixBuf[sampleIndex]) * clipPosMul32) + 128;
+        inSample = (
+					clamp(
+						  floatMixBuf[sampleIndex]
+					) * clipPosMul32
+		) + 128;
         
         // Scale the -1.0 to 1.0 range to the appropriate scale for signed 32-bit samples and then
         // convert to SInt32 and store in the hardware sample buffer
@@ -146,13 +150,13 @@ static void Float32ToSInt32_portable( const float* floatMixBuf, SInt32* destBuf,
 }
 
 static void Float32ToSInt16Aligned32_portable( const float* floatMixBuf, SInt32* destBuf, const size_t end, const size_t start){
-    register float inSample;
+    register double inSample;
     register size_t sampleIndex = start, sampleDestinationMemoryIndex = (start * sizeof(*destBuf));
     
     // Loop through the mix/sample buffers one sample at a time and perform the clip and conversion operations
     for (; sampleIndex < end; sampleIndex++, sampleDestinationMemoryIndex += sizeof(*destBuf)){
         // Fetch the floating point mix sample
-        inSample = (clamp((const double)floatMixBuf[sampleIndex]) * clipPosMul16);
+        inSample = (clamp(floatMixBuf[sampleIndex]) * clipPosMul16);
         
         // Scale the -1.0 to 1.0 range to the appropriate scale for signed 16-bit samples and then
         // convert to SInt16 and shit upwards of 16 bits (to have the correct volume) and store in the hardware sample buffer
@@ -163,13 +167,13 @@ static void Float32ToSInt16Aligned32_portable( const float* floatMixBuf, SInt32*
 }
 
 static void Float32ToSInt16_portable( const float* floatMixBuf, SInt16* destBuf, const size_t end, const size_t start){
-    register float inSample;
+    register double inSample;
     register size_t sampleIndex = start, sampleDestinationMemoryIndex = (start * sizeof(*destBuf));
     
     // Loop through the mix/sample buffers one sample at a time and perform the clip and conversion operations
     for (; sampleIndex < end; sampleIndex++, sampleDestinationMemoryIndex += sizeof(*destBuf)){
         // Fetch the floating point mix sample
-        inSample = (clamp((const double)floatMixBuf[sampleIndex]) * clipPosMul16);
+        inSample = (clamp(floatMixBuf[sampleIndex]) * clipPosMul16);
         
         // Scale the -1.0 to 1.0 range to the appropriate scale for signed 16-bit samples and then
         // convert to SInt16 and store in the hardware sample buffer
@@ -248,9 +252,9 @@ static void Float32ToSInt16_no_array_portable( const float* mixBuf, SInt16* dest
 
 #if defined(PPC)
 
-#define Float32ToSInt16_optimized Float32ToSInt16_portable
-#define Float32ToSInt32_optimized Float32ToSInt32_portable
-#define Float32ToSInt16Aligned32_optimized Float32ToSInt16Aligned32_portable
+#define Float32ToSInt16_optimized Float32ToSInt16_no_array_portable
+#define Float32ToSInt32_optimized Float32ToSInt32_no_array_portable
+#define Float32ToSInt16Aligned32_optimized Float32ToSInt16Aligned32_no_array_portable
 
 #elif defined(TARGET_RT_LITTLE_ENDIAN) || defined(X86)
 
@@ -279,6 +283,5 @@ static void Float32ToSInt16_no_array_portable( const float* mixBuf, SInt16* dest
 #define Float32ToSInt16Aligned32_optimized Float32ToSInt16Aligned32_portable
 
 #endif
-
 
 #endif

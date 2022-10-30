@@ -60,6 +60,7 @@ struct Parm
     struct akm_codec *codec;
     bool hasControl;
     bool HasMute;
+	bool usesUnmuteVolumeReset;
     unsigned char MuteReg;
     unsigned char MuteOnVal;
     unsigned char MuteOffVal;

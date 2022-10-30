@@ -56,25 +56,4 @@ void *pci_alloc_consistent(size_t size, void *NonAlignedAddress);
 void pci_free_consistent(void* addr);
 */
 
-#ifndef _IOBUFFERMEMORYDESCRIPTOR_H
-class IOBufferMemoryDescriptor;
-#endif
-
-struct memhandle
-{
-    // note: this is for 32-bit OS only
-    size_t size;
-    void * addr;          // virtual
-    IOPhysicalAddress dma_handle; // physical
-    
-#if !defined(OLD_ALLOC)
-    IOBufferMemoryDescriptor *desc;
-#endif
-};
-
-#define allocation_mask ((0x000000007FFFFFFFULL) & (~((PAGE_SIZE) - 1)))
-
-int pci_alloc(struct memhandle *h);
-void pci_free(struct memhandle *h);
-
 #endif

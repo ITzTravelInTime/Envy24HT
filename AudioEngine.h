@@ -11,10 +11,32 @@
     #error "Unknown processor architecture"
 #endif
 
+#include <IOKit/IOLib.h>
 #include <IOKit/audio/IOAudioEngine.h>
 
 #include "AudioDevice.h"
 #include "misc.h"
+
+#ifndef _IOBUFFERMEMORYDESCRIPTOR_H
+class IOBufferMemoryDescriptor;
+#endif
+
+struct memhandle
+{
+    // note: this is for 32-bit OS only
+    size_t size;
+    void * addr;          // virtual
+    IOPhysicalAddress dma_handle; // physical
+    
+#if !defined(OLD_ALLOC)
+    IOBufferMemoryDescriptor *desc;
+#endif
+};
+
+#define allocation_mask ((0x000000007FFFFFFFULL) & (~((PAGE_SIZE) - 1)))
+
+int pci_alloc(struct memhandle *h);
+void pci_free(struct memhandle *h);
 
 #define Envy24HTAudioEngine com_Envy24HTAudioEngine
 
@@ -33,7 +55,6 @@ public:
     virtual bool	initHardware(IOService *provider);
     virtual void	stop(IOService *provider);
 	
-	UInt32 lookUpFrequencyBits(UInt32 Frequency, const UInt32* FreqList, const UInt32* FreqBitList, UInt32 ListSize, UInt32 Default);
     virtual void	dumpRegisters();
 
 	virtual IOAudioStream *createNewAudioStream(IOAudioStreamDirection direction, void *sampleBuffer, UInt32 sampleBufferSize, UInt32 channel, UInt32 channels);
@@ -78,6 +99,8 @@ private:
     struct memhandle outSPDFBuffer;
     
     IOFilterInterruptEventSource *interruptEventSource;
+	
+	UInt32 lookUpFrequencyBits(UInt32 Frequency, const UInt32* FreqList, const UInt32* FreqBitList, UInt32 ListSize, UInt32 Default);
     
     static void interruptHandler(OSObject *owner, IOInterruptEventSource *source, int count);
     static bool interruptFilter(OSObject *owner, IOFilterInterruptEventSource *source);
