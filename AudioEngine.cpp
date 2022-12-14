@@ -5,6 +5,8 @@
 #include <IOKit/IOFilterInterruptEventSource.h>
 
 #include <IOKit/pci/IOPCIDevice.h>
+#include <libkern/version.h>
+
 #include "regs.h"
 #include "misc.h"
 #include "prodigy_hifi.h"
@@ -304,6 +306,38 @@ bool Envy24HTAudioEngine::initHardware(IOService *provider)
 Done:
 
     return result;
+}
+
+OSString* Envy24HTAudioEngine::getGlobalUniqueID(){
+    
+    //const OSMetaClass * const myMetaClass = getMetaClass();
+    
+    UInt8 bus,device,function;
+    
+    bus = card->pci_dev->getBusNumber();
+    device = card->pci_dev->getDeviceNumber();
+    function = card->pci_dev->getFunctionNumber();
+    
+    const UInt16 port = card->pci_dev->configRead16(kIOPCIConfigBaseAddress0) & 0xFFFE;
+    
+    static const int MAX_STRING = 128;
+    
+    char uniqueIDStr[MAX_STRING];
+    bzero(uniqueIDStr, MAX_STRING);
+    
+    //const char* className = (myMetaClass) ? myMetaClass->getClassName() : NULL;
+    #if VERSION_MAJOR >= 10
+    snprintf(uniqueIDStr, MAX_STRING, /*"%s:*/ "%s:%s:%x:%x:%x:%x:%x", /*className,*/ card->Specific.name, card->Specific.producer, bus, device, function, port, (const UInt32)this->index);
+    #else
+    sprintf(uniqueIDStr, /*"%s:*/ "%s:%s:%x:%x:%x:%x:%x", /*className,*/ card->Specific.name, card->Specific.producer, bus, device, function, port, (const UInt32)this->index);
+    #endif
+    //OSString* value = super::getGlobalUniqueID();
+    
+    OSString* value = OSString::withCString (uniqueIDStr);
+    
+    DBGPRINT("Envy24HTAudioEngine[%p]::getGlobalUniqueID() -- Returned value: %s\n", this, value->getCStringNoCopy());
+    
+    return value;
 }
 
 void Envy24HTAudioEngine::free()
