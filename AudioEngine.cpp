@@ -5,7 +5,9 @@
 #include <IOKit/IOFilterInterruptEventSource.h>
 
 #include <IOKit/pci/IOPCIDevice.h>
+
 #include <libkern/version.h>
+#include <IOKit/audio/IOAudioDefines.h>
 
 #include "regs.h"
 #include "misc.h"
@@ -189,6 +191,14 @@ bool Envy24HTAudioEngine::initHardware(IOService *provider)
     setNumSampleFramesPerBuffer(NUM_SAMPLE_FRAMES);
 	setSampleOffset(32);
 	
+#if !defined(PPC)
+    if (version_major > 10)   {         /* newer than SnowLeopard */
+        setClockIsStable(true);
+    }else
+#endif
+    {
+        setProperty(kIOAudioEngineClockIsStableKey, 1ULL, 32U);
+    }
 	
     workLoop = getWorkLoop();
     if (!workLoop) {
