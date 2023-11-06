@@ -81,6 +81,11 @@ struct CardSpecific
 	
 	bool supports192;
 	bool supports176;
+    
+    bool concurrentDMA1;
+    bool concurrentDMA2;
+    bool concurrentDMA3;
+    
 };
 
 struct CardData
@@ -164,6 +169,7 @@ struct CardData
     //TODO: prodigy hifi codec cache here
     
 	bool				 SPDIF_RateSupported;
+    
 };
 
 #endif /* AHI_Drivers_Card_DriverData_h */

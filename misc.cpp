@@ -771,6 +771,9 @@ int card_init(struct CardData *card)
         card->Specific.producer = "VIA/ICE";
         card->Specific.supports192 = true;
         card->Specific.supports176 = true;
+        card->Specific.concurrentDMA1 = false;
+        card->Specific.concurrentDMA2 = false;
+        card->Specific.concurrentDMA3 = false;
         
         //TODO: Find ids for other cards, possibly the aureon universe, add ids for Onkyo cards
         
@@ -860,11 +863,16 @@ int card_init(struct CardData *card)
             case SUBVENDOR_MAYA44:
             {
                 card->SubType = MAYA44;
-                card->Specific.NumChannels = 4;
+                card->Specific.NumChannels = 2;
                 card->Specific.HasSPDIF = true;
                 IOLog("Envy24HTAudioDriver::Found ESI Maya44!\n");
                 card->Specific.name = "MAYA 44";
                 card->Specific.producer = "Audiotrak/ESI";
+                
+                //TODO: test the dma implementation for this
+                card->Specific.concurrentDMA3 = true;
+				card->Specific.concurrentDMA2 = true;
+				card->Specific.concurrentDMA1 = true;
                 break;
             }
             case SUBVENDOR_PHASE22:
@@ -901,6 +909,11 @@ int card_init(struct CardData *card)
                 card->Specific.name = "Prodigy 7.1 HIFI";
                 card->Specific.producer = "Audiotrak/ESI";
                 card->Specific.supports176 = false;
+				
+				card->Specific.concurrentDMA3 = true;
+				card->Specific.concurrentDMA2 = true;
+				card->Specific.concurrentDMA1 = true;
+				
                 break;
             }
             case VT1724_SUBDEVICE_PRODIGY_HD2:

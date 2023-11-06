@@ -251,6 +251,16 @@ bool Envy24HTAudioEngine::initHardware(IOService *provider)
     outSPDFBuffer.dma_handle = 0;
     outSPDFBuffer.size = card->Specific.BufferSizeRec;
     
+    for(int i=0; i<numberConcurentDMABuffers;i++){
+        concurrentDMABuffers[i].addr = NULL;
+        concurrentDMABuffers[i].dma_handle = 0;
+        concurrentDMABuffers[i].size = card->Specific.BufferSizeRec;
+        
+        if (pci_alloc(&concurrentDMABuffers[i])){
+            goto Done;
+        }
+    }
+    
     if (pci_alloc(&outBuffer)){
         goto Done;
     }
@@ -269,6 +279,16 @@ bool Envy24HTAudioEngine::initHardware(IOService *provider)
     
 	card->pci_dev->ioWrite8(MT_SAMPLERATE, 8, card->mtbase); // initialize to 44100 Hz
 	card->pci_dev->ioWrite8(MT_DMAI_BURSTSIZE, (8 - card->Specific.NumChannels) / 2, card->mtbase);
+    
+    if (card->Specific.concurrentDMA1)
+        card->pci_dev->ioWrite32(MT_PDMA1_ADDRESS, (UInt32)concurrentDMABuffers[0].dma_handle, card->mtbase);
+    
+    if (card->Specific.concurrentDMA2)
+        card->pci_dev->ioWrite32(MT_PDMA2_ADDRESS, (UInt32)concurrentDMABuffers[1].dma_handle, card->mtbase);
+    
+    if (card->Specific.concurrentDMA3)
+        card->pci_dev->ioWrite32(MT_PDMA3_ADDRESS, (UInt32)concurrentDMABuffers[2].dma_handle, card->mtbase);
+    
 	
     // Create an IOAudioStream for each buffer and add it to this audio engine
     //audioStream = createNewAudioStream(kIOAudioStreamDirectionOutput, outputBuffer, card->Specific.BufferSize, 0, card->Specific.NumChannels);
@@ -281,6 +301,39 @@ bool Envy24HTAudioEngine::initHardware(IOService *provider)
 	
 	addAudioStream(audioStream);
     audioStream->release();
+    
+    if (card->Specific.concurrentDMA1){
+        audioStream = createNewAudioStream(kIOAudioStreamDirectionOutput, concurrentDMABuffers[0].addr, card->Specific.BufferSizeRec, 2, 2);
+        
+        if (!audioStream) {
+            goto Done;
+        }
+        
+        addAudioStream(audioStream);
+        audioStream->release();
+    }
+    
+    if (card->Specific.concurrentDMA2){
+        audioStream = createNewAudioStream(kIOAudioStreamDirectionOutput, concurrentDMABuffers[1].addr, card->Specific.BufferSizeRec, 4, 2);
+        
+        if (!audioStream) {
+            goto Done;
+        }
+        
+        addAudioStream(audioStream);
+        audioStream->release();
+    }
+    
+    if (card->Specific.concurrentDMA3){
+        audioStream = createNewAudioStream(kIOAudioStreamDirectionOutput, concurrentDMABuffers[2].addr, card->Specific.BufferSizeRec, 6, 2);
+        
+        if (!audioStream) {
+            goto Done;
+        }
+        
+        addAudioStream(audioStream);
+        audioStream->release();
+    }
 
     //audioStream = createNewAudioStream(kIOAudioStreamDirectionInput, inputBuffer, card->Specific.BufferSizeRec, 1, 2);
     
@@ -385,6 +438,10 @@ void Envy24HTAudioEngine::free()
     pci_free(&outSPDFBuffer);
     pci_free(&inBuffer);
     
+    for(int i=0; i<numberConcurentDMABuffers;i++){
+        pci_free(&concurrentDMABuffers[i]);
+    }
+    
     super::free();
 }
 
@@ -485,11 +542,12 @@ IOReturn Envy24HTAudioEngine::performAudioEngineStart()
 {
     DBGPRINT("Envy24HTAudioEngine[%p]::performAudioEngineStart()\n", this);
 	
-    ClearMask8(card->pci_dev, card->mtbase, MT_DMA_CONTROL, MT_PDMA0_START | MT_PDMA4_START |
+    ClearMask8(card->pci_dev, card->mtbase, MT_DMA_CONTROL, MT_PDMA0_START | MT_PDMA1_START | MT_PDMA2_START | MT_PDMA3_START  | MT_PDMA4_START |
 			   MT_RDMA0_START | MT_RDMA1_START); // stop
     ClearMask8(card->pci_dev, card->mtbase, MT_INTR_MASK, MT_PDMA0_MASK); // | MT_RDMA0_MASK); // enable irqs
+    
 	WriteMask8(card->pci_dev, card->mtbase, MT_INTR_STATUS, MT_DMA_FIFO | MT_PDMA0 | MT_PDMA4 |
-			   MT_RDMA0 | MT_RDMA1); // clear possibly pending interrupts
+			   MT_RDMA0 | MT_RDMA1 | MT_PDMA1 | MT_PDMA2 | MT_PDMA3); // clear possibly pending interrupts
 
 
 	// Play
@@ -517,7 +575,25 @@ IOReturn Envy24HTAudioEngine::performAudioEngineStart()
 
 
     // SPDIF
-	unsigned char start = MT_PDMA0_START | MT_RDMA0_START;
+	UInt8 start = MT_PDMA0_START | MT_RDMA0_START;
+    
+    if (card->Specific.concurrentDMA1){
+        start |= MT_PDMA1_START;
+        card->pci_dev->ioWrite16(MT_PDMA1_LENGTH, BufferSize16, card->mtbase);
+		card->pci_dev->ioWrite16(MT_PDMA1_INTLEN, BufferSize16, card->mtbase);
+    }
+    
+    if (card->Specific.concurrentDMA2){
+        start |= MT_PDMA2_START;
+        card->pci_dev->ioWrite16(MT_PDMA2_LENGTH, BufferSize16, card->mtbase);
+		card->pci_dev->ioWrite16(MT_PDMA2_INTLEN, BufferSize16, card->mtbase);
+    }
+    
+    if (card->Specific.concurrentDMA3){
+        start |= MT_PDMA3_START;
+        card->pci_dev->ioWrite16(MT_PDMA3_LENGTH, BufferSize16, card->mtbase);
+		card->pci_dev->ioWrite16(MT_PDMA3_INTLEN, BufferSize16, card->mtbase);
+    }
       
 	if (card->SPDIF_RateSupported && card->Specific.HasSPDIF)
     {
@@ -547,12 +623,12 @@ IOReturn Envy24HTAudioEngine::performAudioEngineStart()
 
 IOReturn Envy24HTAudioEngine::performAudioEngineStop()
 {
-    unsigned char RMASK = MT_RDMA0_MASK | MT_RDMA1_MASK;
+    UInt8 RMASK = MT_RDMA0_MASK | MT_RDMA1_MASK;
     
 	DBGPRINT("Envy24HTAudioEngine[%p]::performAudioEngineStop()\n", this);
 
     // Add audio - I/O stop code here
-    ClearMask8(card->pci_dev, card->mtbase, MT_DMA_CONTROL, MT_PDMA0_START | MT_PDMA4_START);
+    ClearMask8(card->pci_dev, card->mtbase, MT_DMA_CONTROL, MT_PDMA0_START | MT_PDMA1_START | MT_PDMA2_START | MT_PDMA3_START | MT_PDMA4_START);
     WriteMask8(card->pci_dev, card->mtbase, MT_INTR_MASK, MT_DMA_FIFO_MASK | MT_PDMA0_MASK);
 	
 	ClearMask8(card->pci_dev, card->mtbase, MT_DMA_CONTROL, RMASK);

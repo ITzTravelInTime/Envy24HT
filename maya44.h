@@ -11,6 +11,6 @@
 #define MAYA44_H
 
 #define WM_DEV_MAYA44_1 0x34 //Addess of wm8776 number 1 of the maya44
-#define WM_DEV_MAYA44_2 0x36 //Addess of wm8776 number 1 of the maya44
+#define WM_DEV_MAYA44_2 0x36 //Addess of wm8776 number 2 of the maya44
 
 #endif

@@ -100,6 +100,9 @@ private:
     struct memhandle outBuffer;
     struct memhandle outSPDFBuffer;
     
+    static const int numberConcurentDMABuffers = 3;
+    struct memhandle concurrentDMABuffers[numberConcurentDMABuffers];
+    
     IOFilterInterruptEventSource *interruptEventSource;
 	
 	UInt32 lookUpFrequencyBits(UInt32 Frequency, const UInt32* FreqList, const UInt32* FreqBitList, UInt32 ListSize, UInt32 Default);
