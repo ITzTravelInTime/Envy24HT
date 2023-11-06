@@ -5,8 +5,10 @@
 #include "DriverData.h"
 #include "Revo51.h"
 #include "prodigy_hifi.h"
+#include "maya44.h"
 
 #include <IOKit/IOLib.h>
+#include <libkern/version.h>
 #include <IOKit/audio/IOAudioDevice.h>
 #include <IOKit/audio/IOAudioDefines.h>
 
@@ -25,6 +27,7 @@ void AddResetHandler(struct CardData *card);
 unsigned char ReadI2CDelay(IOPCIDevice *dev, struct CardData *card, unsigned char addr, int delay);
 
 static void CreateParmsForProdigyHiFi(struct CardData *card);
+static void CreateParmsForMaya44(struct CardData *card);
 static void CreateParmsForJulia(struct CardData *card);
 static void CreateParmsForPhase22(struct CardData *card);
 static void CreateParmsForRevo71(struct CardData *card);
@@ -844,7 +847,7 @@ int card_init(struct CardData *card)
             case SUBVENDOR_MAYA44:
             {
                 card->SubType = MAYA44;
-                card->Specific.NumChannels = 2;
+                card->Specific.NumChannels = 4;
                 card->Specific.HasSPDIF = true;
                 IOLog("Envy24HTAudioDriver::Found ESI Maya44!\n");
                 card->Specific.name = "MAYA 44";
@@ -1183,6 +1186,8 @@ int card_init(struct CardData *card)
     }
     else if (card->SubType == MAYA44)
     {
+	
+		/*
         dev->ioWrite8(CCS_SYSTEM_CONFIG, 0x78, card->iobase);
         dev->ioWrite8(CCS_ACLINK_CONFIG, CCS_ACLINK_I2S, card->iobase); // I2S in split mode
         dev->ioWrite8(CCS_I2S_FEATURES, CCS_I2S_96KHZ | CCS_I2S_24BIT | CCS_I2S_192KHZ, card->iobase);
@@ -1226,6 +1231,17 @@ int card_init(struct CardData *card)
         //dev->ioWrite32(0x2C, 0x300200, card->mtbase); // routes analogue in to analogue out
         
         CreateParmsForJulia(card);
+		*/
+		
+		dev->ioWrite8(CCS_SYSTEM_CONFIG, 0x45, card->iobase);
+        dev->ioWrite8(CCS_ACLINK_CONFIG, CCS_ACLINK_I2S, card->iobase); // AC-link
+        dev->ioWrite8(CCS_I2S_FEATURES, CCS_I2S_96KHZ | CCS_I2S_24BIT | CCS_I2S_192KHZ | CCS_I2S_VOLMUTE, card->iobase); // I2S
+        dev->ioWrite8(CCS_SPDIF_CONFIG, 0xC3, card->iobase); // S/PDIF
+		
+		dev->ioWrite8(MT_SAMPLERATE, 8, card->mtbase);
+		
+		CreateParmsForMaya44(card);
+		
     }
     else if (card->SubType == PRODIGY_HIFI)
     {
@@ -1383,6 +1399,7 @@ void MicroDelay(unsigned int micros)
   IODelay(micros);
 }
 
+
 static void CreateParmsForProdigyHiFi(struct CardData *card)
 {
     Parm* p = new Parm;
@@ -1432,6 +1449,124 @@ static void CreateParmsForProdigyHiFi(struct CardData *card)
     p->I2C_codec_addr = WM_DEV;
     p->codec = NULL;
     p->hasControl = true;
+	p->usesUnmuteVolumeReset = true;
+    //p->HasMute = false;
+    p->HasMute = true;
+    p->MuteReg = WM_DAC_CTRL2;
+    p->MuteOnVal = 0;
+    p->MuteOffVal = DAC_MIN + 1;
+	
+    p->Next = NULL;
+}
+
+
+static void CreateParmsForMaya44(struct CardData *card)
+{
+    Parm* p = new Parm;
+    Parm *prev = NULL;
+    card->ParmList = p;
+    
+    // left output ch1
+    p->InitialValue = (WM_VOL_MAX - (DAC_MIN + 1)) / 2; //0x7F;
+    p->MinValue = DAC_MIN + 1;
+    p->MaxValue = WM_VOL_MAX;
+    p->MindB = (-48u << 16) + 32768;
+    p->MaxdB = (60 << 16) + 32768;
+    p->ChannelID = kIOAudioControlChannelIDDefaultLeft;
+    p->Name = kIOAudioControlChannelNameLeft;
+    p->ControlID = 0;
+    p->Usage = kIOAudioControlUsageOutput;
+    p->reg = WM_DAC_CTRL1;
+    p->reverse = false;
+    p->I2C = true;
+    p->I2C_codec_addr = WM_DEV_MAYA44_1;
+    p->hasControl = true;
+	
+	p->usesUnmuteVolumeReset = true;
+    p->HasMute = true;
+    p->MuteReg = WM_DAC_CTRL1;
+    p->MuteOnVal = 0;
+    p->MuteOffVal = DAC_MIN + 1;
+    p->codec = NULL;
+    
+	//WM_MASTER
+    
+    // right output ch2
+    prev = p;
+    p = new Parm;
+    prev->Next = p;
+    p->InitialValue = (WM_VOL_MAX - (DAC_MIN + 1)) / 2; //0x7F;
+    p->MinValue = DAC_MIN + 1;
+    p->MaxValue = WM_VOL_MAX;
+    p->MindB = (-48u << 16) + 32768;
+    p->MaxdB = (60 << 16) + 32768;;
+    p->ChannelID = kIOAudioControlChannelIDDefaultRight;
+    p->Name = kIOAudioControlChannelNameRight;
+    p->ControlID = 1;
+    p->Usage = kIOAudioControlUsageOutput;
+    p->reg = WM_DAC_CTRL2;
+    p->reverse = false;
+    p->I2C = true;
+    p->I2C_codec_addr = WM_DEV_MAYA44_1;
+    p->codec = NULL;
+    p->hasControl = true;
+	
+	p->usesUnmuteVolumeReset = true;
+    //p->HasMute = false;
+    p->HasMute = true;
+    p->MuteReg = WM_DAC_CTRL2;
+    p->MuteOnVal = 0;
+    p->MuteOffVal = DAC_MIN + 1;
+	
+    
+	// left output ch3
+    prev = p;
+    p = new Parm;
+    prev->Next = p;
+    p->InitialValue = (WM_VOL_MAX - (DAC_MIN + 1)) / 2; //0x7F;
+    p->MinValue = DAC_MIN + 1;
+    p->MaxValue = WM_VOL_MAX;
+    p->MindB = (-48u << 16) + 32768;
+    p->MaxdB = (60 << 16) + 32768;
+    p->ChannelID = kIOAudioControlChannelIDDefaultCenter;
+    p->Name = kIOAudioControlChannelNameCenter;
+    p->ControlID = 2;
+    p->Usage = kIOAudioControlUsageOutput;
+    p->reg = WM_DAC_CTRL1;
+    p->reverse = false;
+    p->I2C = true;
+    p->I2C_codec_addr = WM_DEV_MAYA44_2;
+    p->hasControl = true;
+	
+	p->usesUnmuteVolumeReset = true;
+    p->HasMute = true;
+    p->MuteReg = WM_DAC_CTRL1;
+    p->MuteOnVal = 0;
+    p->MuteOffVal = DAC_MIN + 1;
+    p->codec = NULL;
+    
+	//WM_MASTER_CTRL
+    
+    // right output ch4
+    prev = p;
+    p = new Parm;
+    prev->Next = p;
+    p->InitialValue = (WM_VOL_MAX - (DAC_MIN + 1)) / 2; //0x7F;
+    p->MinValue = DAC_MIN + 1;
+    p->MaxValue = WM_VOL_MAX;
+    p->MindB = (-48u << 16) + 32768;
+    p->MaxdB = (60 << 16) + 32768;;
+    p->ChannelID = kIOAudioControlChannelIDDefaultLeftRear;
+    p->Name = kIOAudioControlChannelNameLeftRear;
+    p->ControlID = 3;
+    p->Usage = kIOAudioControlUsageOutput;
+    p->reg = WM_DAC_CTRL2;
+    p->reverse = false;
+    p->I2C = true;
+    p->I2C_codec_addr = WM_DEV_MAYA44_2;
+    p->codec = NULL;
+    p->hasControl = true;
+	
 	p->usesUnmuteVolumeReset = true;
     //p->HasMute = false;
     p->HasMute = true;
@@ -2251,8 +2386,13 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->MaxValue = 0xFF;
     p->MindB = (-35u << 16) + 32768;
     p->MaxdB = 0;
+	#if VERSION_MAJOR >= 10
     p->ChannelID = kIOAudioControlChannelIDDefaultFrontLeftCenter;
     p->Name =  kIOAudioControlChannelNameFrontLeftCenter;
+	#else
+	p->ChannelID = kIOAudioControlChannelIDDefaultSub + 1;
+    p->Name = "Front Left Center";
+	#endif
     p->ControlID = 6;
     p->Usage = kIOAudioControlUsageOutput;
     p->reg = 0xF;
@@ -2274,8 +2414,13 @@ static void CreateParmsForAureonSpace(struct CardData *card)
     p->MaxValue = 0xFF;
     p->MindB = (-35u << 16) + 32768;
     p->MaxdB = 0;
+	#if VERSION_MAJOR >= 10
     p->ChannelID = kIOAudioControlChannelIDDefaultFrontRightCenter;
     p->Name =  kIOAudioControlChannelNameFrontRightCenter;
+	#else
+	p->ChannelID = kIOAudioControlChannelIDDefaultSub + 2;
+    p->Name = "Front Right Center";
+	#endif
     p->ControlID = 7;
     p->Usage = kIOAudioControlUsageOutput;
     p->reg = 0x10;

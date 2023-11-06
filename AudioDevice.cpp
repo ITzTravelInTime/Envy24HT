@@ -179,6 +179,9 @@ bool Envy24HTAudioDevice::createAudioEngine()
         
         if (p->HasMute)
         {
+            
+            //TODO: input mute control
+            
             // Create an output mute control
             control = IOAudioToggleControl::createMuteControl(false,	// initial state - unmuted
                                                               p->ChannelID,//kIOAudioControlChannelIDAll,	// Affects all channels
