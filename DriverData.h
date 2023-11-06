@@ -33,8 +33,8 @@
 #define MPU401_READ()         dev->InByte(card->iobase + DATA_PORT )
 #define MPU401_WRITE(v)       dev->OutByte(card->iobase + DATA_PORT,v )
 
-enum Model {AUREON_SKY, AUREON_SPACE, PHASE28, REVO51, REVO71, JULIA, MAYA44, PHASE22, AP192, PRODIGY_HD2, PRODIGY_HIFI, CANTATIS};
-extern UInt32 Dirs[];
+enum Model {AUREON_SKY, AUREON_SPACE, PHASE28, REVO51, REVO71, JULIA, PHASE22, AP192, PRODIGY_HD2, CANTATIS, MAYA44, PRODIGY_HIFI};
+extern const UInt32 Dirs[];
 
 
 struct CardData;

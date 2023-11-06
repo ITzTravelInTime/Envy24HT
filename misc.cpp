@@ -16,9 +16,22 @@
 /* Global in Card.c */
 extern const UWORD InputBits[];
 
-UInt32 Dirs[9] = {0x005FFFFF, 0x005FFFFF, 0x001EFFF7, 0x004000FA,
-                         0x004000FA, 0x007FFF9F, 0x00FFFFFF, 0x00FFFFFF,
-                         0x00DFFFFF};
+//enum Model {AUREON_SKY, AUREON_SPACE, PHASE28, REVO51, REVO71, JULIA, PHASE22, AP192, PRODIGY_HD2, CANTATIS, MAYA44, PRODIGY_HIFI};
+
+const UInt32 Dirs[12] = {
+    0x005FFFFF,  //aureon sky        //matches ALSA
+    0x005FFFFF,  //aureon space      //matches ALSA
+    0x001EFFF7,  //pase28            //ALSA mismatch, should be 0x005FFFFF
+    0x004000FA,  //revo51            //TODO: find the actual value, might be from an actual rom
+    0x004000FA,  //revo71            //TODO: find the actual value, might be from an actual rom
+    0x007FFF9F,  //julia             //matches ALSA
+    0x00FFFFFF,  //pase22            //matches ALSA
+    0x00FFFFFF,  //audiophile192     //TODO: find the actual value
+    0x00DFFFFF,  //prodigyhd2        //ALSA mismatch, should be 0x005FFFFF
+    0x00FFFFFF,  //cantis            //TODO: find the actual value
+    0x00FFFFFF,  //maya44            //FROM ALSA
+    0x005FFFFF   //prodigy 7.1 hifi  //FROM ALSA
+};
 
 /* Public functions in main.c */
 void card_cleanup(struct CardData *card);
@@ -967,8 +980,10 @@ int card_init(struct CardData *card)
     else
        SetGPIOMask(dev, card->iobase, 0x00000000);
 
-    dev->ioWrite32(CCS_GPIO_DIR, Dirs[card->SubType], card->iobase); // input/output
-    dev->ioRead16(CCS_GPIO_DIR, card->iobase);
+    SetGPIODir(card->pci_dev, card, Dirs[card->SubType]);
+    
+    //dev->ioWrite32(CCS_GPIO_DIR, Dirs[card->SubType], card->iobase); // input/output
+    //dev->ioRead16(CCS_GPIO_DIR, card->iobase);
        
     if (card->SubType == REVO71 || card->SubType == REVO51) {
        dev->ioWrite16(CCS_GPIO_DATA, 0x0072, card->iobase);
@@ -1293,7 +1308,7 @@ int card_init(struct CardData *card)
         //prodigy_hifi_init(card);
 
         dev->ioWrite8(MT_SAMPLERATE, 8, card->mtbase);
-        ////dev->ioWrite32(0x2C, 0x300200, card->mtbase); // routes analogue in to analogue out
+        //dev->ioWrite32(0x2C, 0x300200, card->mtbase); // routes analogue in to analogue out
         
         CreateParmsForProdigyHiFi(card);
     }
