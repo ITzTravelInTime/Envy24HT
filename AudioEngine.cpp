@@ -654,6 +654,8 @@ UInt32 Envy24HTAudioEngine::getCurrentSampleFrame()
 	//UInt32 diff = (current_address - ((UInt32) physicalAddressOutput)) / div;
 
     IOPhysicalAddress diff = (current_address - outBuffer.dma_handle) / div;
+	
+	DBGPRINT("Envy24HTAudioEngine[%p]::getCurrentSampleFrame() --- returned %lx\n", this, (UInt32)diff);
     
 	return (UInt32)diff;
 }
@@ -664,13 +666,6 @@ IOReturn Envy24HTAudioEngine::performFormatChange(IOAudioStream *audioStream, co
     
 	if (newSampleRate)
 	{
-		//doesn't work because aparently this function needs to be performed multiple time to have the speed and pitch correcty setup
-		/*
-		if (newSampleRate->whole == currentSampleRate){
-			return kIOReturnSuccess;
-		}
-		*/
-		 
 		currentSampleRate = newSampleRate->whole;
 	}
 	else
@@ -757,7 +752,7 @@ void Envy24HTAudioEngine::filterInterrupt(int index)
 		
 		   card->pci_dev->ioWrite8(MT_INTR_STATUS, mtstatus, card->mtbase); // clear interrupt
 		   
-		   if(mtstatus & MT_PDMA0)
+		   if(mtstatus & MT_PDMA0 || mtstatus & MT_PDMA1 || mtstatus & MT_PDMA2 || mtstatus & MT_PDMA3 || mtstatus & MT_PDMA4)
            {
 	           takeTimeStamp();
 		   }

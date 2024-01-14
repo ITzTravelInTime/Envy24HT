@@ -6,6 +6,7 @@
 #include "Revo51.h"
 #include "prodigy_hifi.h"
 #include "maya44.h"
+#include "quartet.h"
 
 #include <IOKit/IOLib.h>
 #include <libkern/version.h>
@@ -18,7 +19,7 @@ extern const UWORD InputBits[];
 
 //enum Model {AUREON_SKY, AUREON_SPACE, PHASE28, REVO51, REVO71, JULIA, PHASE22, AP192, PRODIGY_HD2, CANTATIS, MAYA44, PRODIGY_HIFI};
 
-const UInt32 Dirs[12] = {
+const UInt32 Dirs[13] = {
     0x005FFFFF,  //aureon sky        //matches ALSA
     0x005FFFFF,  //aureon space      //matches ALSA
     0x001EFFF7,  //pase28            //ALSA mismatch, should be 0x005FFFFF
@@ -30,7 +31,8 @@ const UInt32 Dirs[12] = {
     0x00DFFFFF,  //prodigyhd2        //ALSA mismatch, should be 0x005FFFFF
     0x00FFFFFF,  //cantis            //TODO: find the actual value
     0x00FFFFFF,  //maya44            //FROM ALSA
-    0x005FFFFF   //prodigy 7.1 hifi  //FROM ALSA
+    0x005FFFFF,  //prodigy 7.1 hifi  //FROM ALSA
+	0x0000FF00   //QUARTET INFRASONIC//FROM ALSA
 };
 
 /* Public functions in main.c */
@@ -868,6 +870,8 @@ int card_init(struct CardData *card)
                 IOLog("Envy24HTAudioDriver::Found ESI Maya44!\n");
                 card->Specific.name = "MAYA 44";
                 card->Specific.producer = "Audiotrak/ESI";
+				
+				card->Specific.supports176 = false;
                 
                 //TODO: test the dma implementation for this
                 card->Specific.concurrentDMA3 = true;
@@ -935,7 +939,23 @@ int card_init(struct CardData *card)
                 IOLog("Envy24HTAudioDriver::Found Cantatis card!\n");
                 card->Specific.name = "Cantatis";
                 break;
-                
+				
+			}
+			case VT1724_SUBDEVICE_QTET:
+			{
+				card->SubType = QTET;
+                card->Specific.NumChannels = 2;
+                card->Specific.HasSPDIF = true;
+                IOLog("Envy24HTAudioDriver::Found QUARTET INFRASONIC!\n");
+                card->Specific.name = "QUARTET";
+                card->Specific.producer = "INFRASONIC";
+                card->Specific.supports176 = false;
+				
+				card->Specific.concurrentDMA3 = true;
+				card->Specific.concurrentDMA2 = true;
+				card->Specific.concurrentDMA1 = true;
+				
+				break;
             }
             default:
             {
@@ -990,6 +1010,8 @@ int card_init(struct CardData *card)
        SetGPIOMask(dev, card->iobase, 0x00BFFF85);
     else if (card->SubType == REVO51)
        SetGPIOMask(dev, card->iobase, 0x00BFFF05);
+	else if (card->SubType == QTET)
+	   SetGPIOMask(dev, card->iobase, 0x00FF00FF);
     else
        SetGPIOMask(dev, card->iobase, 0x00000000);
 
@@ -1005,6 +1027,9 @@ int card_init(struct CardData *card)
        dev->ioWrite16(CCS_GPIO_DATA, 0x3819, card->iobase);
     }else if (card->SubType == AP192) {
         dev->ioWrite16(CCS_GPIO_DATA, 0xFFFF, card->iobase);   
+	}else if(card->SubType == QTET){
+		dev->ioWrite16(CCS_GPIO_DATA, 0x007d, card->iobase);
+		dev->ioWrite8(CCS_GPIO_DATA2, 0x00, card->iobase);
     }else {
        dev->ioWrite16(CCS_GPIO_DATA, 0x0000, card->iobase);
        if (card->SubType != PHASE22)
@@ -1359,6 +1384,64 @@ int card_init(struct CardData *card)
         dev->ioWrite8(CCS_SPDIF_CONFIG, 0xC3, card->iobase); // S/PDIF
         
         ProdigyHD2_Init(card);
+    }else if (card->SubType == QTET)
+    {
+	
+		/*
+        dev->ioWrite8(CCS_SYSTEM_CONFIG, 0x78, card->iobase);
+        dev->ioWrite8(CCS_ACLINK_CONFIG, CCS_ACLINK_I2S, card->iobase); // I2S in split mode
+        dev->ioWrite8(CCS_I2S_FEATURES, CCS_I2S_96KHZ | CCS_I2S_24BIT | CCS_I2S_192KHZ, card->iobase);
+        dev->ioWrite8(CCS_SPDIF_CONFIG, CCS_SPDIF_INTEGRATED | CCS_SPDIF_INTERNAL_OUT | CCS_SPDIF_IN_PRESENT | CCS_SPDIF_EXTERNAL_OUT, card->iobase);
+        
+        unsigned char *ptr, reg, data;
+        
+        static unsigned char inits_ak4114[] = {
+            0x00, 0x00, // power down & reset
+            0x00, 0x0F, // power on
+            0x01, 0x70, // I2S
+            0x02, 0x80, // TX1 output enable
+            0x03, 0x49, // 1024 LRCK + transmit data
+            0x04, 0x00, // no mask
+            0x05, 0x00, // no mask
+            0x0D, 0x41, //
+            0x0E, 0x02,
+            0x0F, 0x2C,
+            0x10, 0x00,
+            0x11, 0x00,
+            0xff, 0xff
+        };
+        
+        ptr = inits_ak4358;
+        while (*ptr != 0xff) {
+            reg = *ptr++;
+            data = *ptr++;
+            WriteI2C(dev, card, AK4358_ADDR, reg, data);
+            MicroDelay(5);
+        }
+        
+        ptr = inits_ak4114;
+        while (*ptr != 0xff) {
+            reg = *ptr++;
+            data = *ptr++;
+            WriteI2C(dev, card, AK4114_ADDR, reg, data);
+            MicroDelay(100);
+        }
+        
+        dev->ioWrite8(MT_SAMPLERATE, 8, card->mtbase);
+        //dev->ioWrite32(0x2C, 0x300200, card->mtbase); // routes analogue in to analogue out
+        
+        CreateParmsForJulia(card);
+		*/
+		
+		dev->ioWrite8(CCS_SYSTEM_CONFIG, 0x28, card->iobase);
+        dev->ioWrite8(CCS_ACLINK_CONFIG, CCS_ACLINK_I2S, card->iobase); // AC-link
+        dev->ioWrite8(CCS_I2S_FEATURES, CCS_I2S_96KHZ | CCS_I2S_24BIT | CCS_I2S_192KHZ, card->iobase); // I2S
+        dev->ioWrite8(CCS_SPDIF_CONFIG, 0xC3, card->iobase); // S/PDIF
+		
+		dev->ioWrite8(MT_SAMPLERATE, 8, card->mtbase);
+		
+		CreateParmsForMaya44(card);
+		
     }
 
     //RestoreGPIO(dev, card);
@@ -1435,7 +1518,7 @@ static void CreateParmsForProdigyHiFi(struct CardData *card)
     card->ParmList = p;
     
     // left output
-    p->InitialValue = (WM_VOL_MAX - (DAC_MIN + 1)) / 2; //0x7F;
+	p->InitialValue = (WM_VOL_MAX - (DAC_MIN + 1)) / 2; //0x7F;
     p->MinValue = DAC_MIN + 1;
     p->MaxValue = WM_VOL_MAX;
     p->MindB = (-48u << 16) + 32768;
@@ -1483,6 +1566,32 @@ static void CreateParmsForProdigyHiFi(struct CardData *card)
     p->MuteReg = WM_DAC_CTRL2;
     p->MuteOnVal = 0;
     p->MuteOffVal = DAC_MIN + 1;
+	
+	// global mute output
+	/*prev = p;
+    p = new Parm;
+    prev->Next = p;
+    p->InitialValue = 0x7E;
+    p->MinValue = 14;
+    p->MaxValue = 0x7E;
+    p->MindB = (-49u << 16) + 32768;
+    p->MaxdB = 0;
+    p->ChannelID = kIOAudioControlChannelIDAll;
+    p->Name = kIOAudioControlChannelNameAll;
+    p->ControlID = 0;
+    p->Usage = kIOAudioControlUsageOutput;
+    p->reg = WM_DAC_MUTE;
+    p->reverse = false;
+    p->I2C = true;
+    p->I2C_codec_addr = WM_DEV;
+    p->hasControl = false;
+    p->HasMute = true;
+    p->usesUnmuteVolumeReset = false;
+    p->MuteReg = WM_DAC_MUTE;
+    p->MuteOnVal = 0x1;
+    p->MuteOffVal = 0x0;
+    p->codec = NULL;
+	*/
 	
     p->Next = NULL;
 }
