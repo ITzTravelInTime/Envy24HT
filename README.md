@@ -26,9 +26,7 @@ Currently supported and tested cards are:
 - ESI MAYA44                (Alpha support partially working)
 - Audiotrack Prodigy 7.1    (best support)
 - Audiotrack Prodigy HD2
-- Infrasonic Quartet        (Pre-Alpha support not working yet)
-
-Other cards that could work with this driver (although not guaranteed to and completely untested):
+- Infrasonic Quartet        (Pre-Alpha support not working yet, but groundwork has been done)
 
 Cards that might work (but are currently untested or need implementation work):
 - Onkyo SE 90
