@@ -316,7 +316,7 @@ IOReturn Envy24HTAudioDevice::volumeChanged(IOAudioControl *volumeControl, SInt3
                     {
                         set_dac(card, p->reg, val);
                     }
-                    else if (card->SubType == AUREON_SPACE || card->SubType == AUREON_SKY)
+                    else if (card->SubType == AUREON_UNIVERSE || card->SubType == AUREON_SPACE || card->SubType == AUREON_SKY)
                     {
                         wm_put(card, card->iobase, p->reg, val | 0x100);
                     }
@@ -372,7 +372,7 @@ IOReturn Envy24HTAudioDevice::outputMuteChanged(IOAudioControl *muteControl, SIn
                     {
                         akm4xxx_write(card, p->codec, 0, p->MuteReg, newValue > 0 ? p->MuteOnVal : p->MuteOffVal);
                     }
-                    else if (card->SubType == AUREON_SPACE || card->SubType == AUREON_SKY)
+                    else if (card->SubType == AUREON_UNIVERSE || card->SubType == AUREON_SPACE || card->SubType == AUREON_SKY)
                     {
                         wm_put(card, card->iobase, p->MuteReg, newValue > 0 ? p->MuteOnVal : p->MuteOffVal);
                     }

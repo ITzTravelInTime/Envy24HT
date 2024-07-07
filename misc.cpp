@@ -17,9 +17,9 @@
 /* Global in Card.c */
 extern const UWORD InputBits[];
 
-//enum Model {AUREON_SKY, AUREON_SPACE, PHASE28, REVO51, REVO71, JULIA, PHASE22, AP192, PRODIGY_HD2, CANTATIS, MAYA44, PRODIGY_HIFI};
+//enum Model {AUREON_SKY, AUREON_SPACE, PHASE28, REVO51, REVO71, JULIA, PHASE22, AP192, PRODIGY_HD2, CANTATIS, MAYA44, PRODIGY_HIFI, AUREON_SPACE};
 
-const UInt32 Dirs[13] = {
+const UInt32 Dirs[14] = {
     0x005FFFFF,  //aureon sky        //matches ALSA
     0x005FFFFF,  //aureon space      //matches ALSA
     0x001EFFF7,  //pase28            //ALSA mismatch, should be 0x005FFFFF
@@ -32,7 +32,8 @@ const UInt32 Dirs[13] = {
     0x00FFFFFF,  //cantis            //TODO: find the actual value
     0x00FFFFFF,  //maya44            //FROM ALSA
     0x005FFFFF,  //prodigy 7.1 hifi  //FROM ALSA
-	0x0000FF00   //QUARTET INFRASONIC//FROM ALSA
+	0x0000FF00,  //QUARTET INFRASONIC//FROM ALSA
+	0x005FFFFF   //aureon universe   //FROM ALSA
 };
 
 /* Public functions in main.c */
@@ -805,6 +806,19 @@ int card_init(struct CardData *card)
                 card->Specific.HasSPDIF = true;
                 break;
             }
+			case SUBVENDOR_AUREON_UNIVERSE:
+            {
+                card->Specific.supports192 = false;
+                card->Specific.supports176 = false;
+                
+                card->SubType = AUREON_UNIVERSE;
+                card->Specific.NumChannels = 8;
+                card->Specific.HasSPDIF = true;
+                IOLog("Envy24HTAudioDriver::Found Aureon 7.1 Universe!\n");
+                card->Specific.name = "Aureon 7.1 Universe";
+                card->Specific.producer = "Terratec";
+                break;
+            }
             case SUBVENDOR_PRODIGY71:
             {
                 card->SubType = AUREON_SPACE;
@@ -983,6 +997,8 @@ int card_init(struct CardData *card)
     {
        if (card->SubType == PHASE28)
            dev->ioWrite8(CCS_SYSTEM_CONFIG, 0x2B, card->iobase); // MIDI, ADC+SPDIF IN, 4 DACS
+	   if (card->SubType == AUREON_UNIVERSE)
+           dev->ioWrite8(CCS_SYSTEM_CONFIG, 0x2B, card->iobase); // MIDI, ADC+SPDIF IN, 4 DACS
        else if (card->SubType == AUREON_SPACE)
            dev->ioWrite8(CCS_SYSTEM_CONFIG, 0x0B, card->iobase); // ADC+SPDIF IN, 4 DACS
        else if (card->SubType == REVO71)
@@ -1044,9 +1060,9 @@ int card_init(struct CardData *card)
     else
        dev->ioWrite8(MT_I2S_FORMAT, 0, card->mtbase);
     
-    if (card->SubType == AUREON_SKY || card->SubType == AUREON_SPACE || card->SubType == PHASE28)
+    if (card->SubType == AUREON_SKY || card->SubType == AUREON_SPACE || card->SubType == AUREON_UNIVERSE || card->SubType == PHASE28)
     {
-        if (card->SubType == AUREON_SKY || card->SubType == AUREON_SPACE)
+        if (card->SubType == AUREON_SKY || card->SubType == AUREON_SPACE || card->SubType == AUREON_UNIVERSE)
         {
             aureon_ac97_init(dev, card->iobase);
             SetGPIOMask(dev, card->iobase, ~(AUREON_WM_RESET | AUREON_WM_CS | AUREON_CS8415_CS));
@@ -1071,7 +1087,7 @@ int card_init(struct CardData *card)
        	SetGPIOData(dev, card->iobase, tmp);
         MicroDelay(1);
        
-        if (card->SubType != PHASE28)
+        if (card->SubType != PHASE28 || card->SubType == AUREON_UNIVERSE)
         {
             /* initialize WM8770 codec */
        	    for (i = 0; i < 60; i += 2)
@@ -1092,7 +1108,7 @@ int card_init(struct CardData *card)
             }
         }
         
-        if (card->SubType == AUREON_SPACE || card->SubType == AUREON_SKY)
+        if (card->SubType == AUREON_SPACE || card->SubType == AUREON_SKY || card->SubType == AUREON_UNIVERSE)
         {
             CreateParmsForAureonSpace(card);
         }
