@@ -35,6 +35,8 @@ bool Envy24HTAudioDevice::initHardware(IOService *provider)
 	  goto Done;
 	}
     
+    card->iobase = NULL;
+    card->mtbase = NULL;
     card->Specific.subvendorID = 0;
 	
 	card->pci_dev = OSDynamicCast(IOPCIDevice, provider);
@@ -83,24 +85,26 @@ bool Envy24HTAudioDevice::initHardware(IOService *provider)
     result = true;
     
 Done:
+    
+    if (result) {
+        //IOLog("Envy24HTAudioDevice::initHardware returns %d\n", result);
+        return result;
+    }
 
-    if (!result) {
-	    IOLog("Envy24HTAudioDriver::Something failed while initializing the the Audio Device Object!!!\n");
-		IOSleep(3000);
-        if (card && card->iobase) {
+    IOLog("Envy24HTAudioDriver::Something failed while initializing the the Audio Device Object!!!\n");
+    IOSleep(3000);
+    
+    if (card){
+        if (card->iobase) {
             card->iobase->release();
             card->iobase = NULL;
         }
-		if (card && card->mtbase) {
+        if (card->mtbase) {
             card->mtbase->release();
             card->mtbase = NULL;
         }
-
-		if (card)
-		{
-			FreeDriverData(card);
-			delete card;
-	    }
+        FreeDriverData(card);
+        delete card;
     }
 
 	//IOLog("Envy24HTAudioDevice::initHardware returns %d\n", result);
